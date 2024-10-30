@@ -1,0 +1,28 @@
+.title-score {
+  font-size: 30px;
+}
+svg > g .text-group::after {
+  content: "${score}";
+
+  font-size: 22px;
+  font-weight: bold;
+  color: #000;
+}
+.custom-mark {
+  position: absolute;
+  font-size: 20px;
+  font-weight: bold;
+}
+.mark-min {
+  left: 24%; /* Adjust based on actual gauge size */
+  top: 43%;
+}
+.mark-mid {
+  left: 47%;
+  top: -3%;
+  transform: rotate(0deg);
+}
+.mark-max {
+  right: 24%; /* Adjust based on actual gauge size */
+  top: 43%;
+}
