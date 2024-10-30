@@ -132,7 +132,7 @@ const GuageChart = ({
         >
           <AlertTitle>No Record Found</AlertTitle>
           <Typography variant="body1" textAlign={"center"} color="red">
-            We couldn't find a credit record for this user. Please verify the
+            We could not find a credit record for this user. Please verify the
             information and try again.
           </Typography>
           <Typography

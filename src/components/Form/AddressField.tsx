@@ -31,7 +31,7 @@ const AddressField = ({
   values,
 }: AddressFieldProperties) => {
   interface InputRef extends HTMLInputElement {
-    getPlaces: Function;
+    getPlaces: () => any;
   }
   const inputRef = useRef<InputRef | null>();
   const { isLoaded } = useJsApiLoader({
