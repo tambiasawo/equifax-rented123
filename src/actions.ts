@@ -1,4 +1,10 @@
 "use server";
+type Params = {
+  first_name: string;
+  last_name: string;
+  duration_at_address_check: string;
+  dob: string;
+};
 
 export async function get_equifax_token() {
   const body = new URLSearchParams({
@@ -24,7 +30,6 @@ export async function get_equifax_token() {
   if (!authResponse.ok) {
     const authError = await authResponse.json();
     console.error("Authentication Error:", authError);
-    console.log({ authError });
     return {
       statusCode: 500,
       body: JSON.stringify({
@@ -34,45 +39,31 @@ export async function get_equifax_token() {
     };
   }
   const token = await authResponse.json();
-  console.log({ token });
   return token;
 }
 
 export const checkCreditScore = async (
-  {
-    // first_name,
-    //last_name,
-    duration_at_address_check,
-  }: //dob,
-  {
-    first_name: string;
-    last_name: string;
-    duration_at_address_check: string;
-    dob: string;
-  },
+  params: Params,
   address: string,
-  address2: string | undefined
+  address2: string,
+  access_token: string
 ) => {
-  const { access_token } = await get_equifax_token();
-  console.log({ access_token }, process.env.API_TEST_URL);
-  /* const realname = ` <Subject subjectType="SUBJ">
+  const { first_name, last_name, duration_at_address_check, dob } = params;
+  console.log(
+    { access_token },
+    { first_name, last_name, duration_at_address_check, dob }
+  );
+
+  const subject = ` <Subject subjectType="SUBJ">
                           <SubjectName>
-                            <LastName>TASSIS</LastName>
-                            <FirstName>George</FirstName>
+                            <LastName>${last_name}</LastName>
+                            <FirstName>${first_name}</FirstName>
                           </SubjectName>
                           <SocialInsuranceNumber></SocialInsuranceNumber>
-                          <DateOfBirth>1980-01-01</DateOfBirth>
+                          <DateOfBirth>${dob}</DateOfBirth>
                           <Occupation></Occupation>
-                        </Subject>`; */
-  const testname = `<Subject subjectType="SUBJ">
-      <SubjectName>
-        <LastName>TASSIS</LastName>
-        <Fame>George</Fame>
-      </SubjectName>
-      <SocialInsuranceNumber></SocialInsuranceNumber>
-      <DateOfBirth>1980-01-01</DateOfBirth>
-      <Occupation></Occupation>
-    </Subject>`;
+                        </Subject>`;
+
   const xmlData = `
             <?xml version="1.0" encoding="utf-8"?>
               <CNCustTransmitToEfx xmlns="http://www.equifax.ca/XMLSchemas/CustToEfx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.equifax.ca/XMLSchemas/UAT/CNCustTransmitToEfx.xsd">
@@ -89,7 +80,7 @@ export const checkCreditScore = async (
                   <CNConsumerRequests>
                     <CNConsumerRequest>
                       <Subjects>
-                        ${testname}
+                        ${subject}
                         <Addresses>
                         ${address}
                         ${
@@ -119,9 +110,8 @@ export const checkCreditScore = async (
     if (response.statusText !== "OK") {
       throw new Error("Network response was not ok");
     }
-    console.log({ xmlData });
     const result = await response.text(); // Use .xml() if expecting XML response
-    console.log({ result });
+
     return result;
   } catch (error) {
     console.log("Error", error);

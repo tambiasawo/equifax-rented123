@@ -150,15 +150,8 @@ const MyForm = () => {
           } = values;
           const [street_number, ...rest] = street_address.split(" ");
           const [street_number2, ...rest2] = street_address2!.split(" ");
-
-          const testAddress = `<Address addressType='CURR'>
-                <CivicNumber>550</CivicNumber>
-                <StreetName>QUEENS QUAY W</StreetName>
-                <City>TORONTO</City>
-                <Province code="ON"/>
-                <PostalCode>M5V3M8</PostalCode>
-              </Address>`;
-         /*  const address = `<Address addressType='CURR'>
+          console.log({ scoreNumber });
+          const address = `<Address addressType='CURR'>
                 <CivicNumber>${street_number}</CivicNumber>
                 <StreetName>${rest.join(" ")} ${
             unit_number && "#" + unit_number
@@ -168,7 +161,7 @@ const MyForm = () => {
                   values.province_territory as string
                 )}"/>
                 <PostalCode>${values.postal_code2}</PostalCode>
-              </Address>`; */
+              </Address>`;
 
           const address2 = `<Address addressType='PREV'>
                 <CivicNumber>${street_number2}</CivicNumber>
@@ -182,52 +175,66 @@ const MyForm = () => {
                 <PostalCode>${values.postal_code2}</PostalCode>
               </Address>`;
 
-          const result = await checkCreditScore(
-            { first_name, last_name, duration_at_address_check, dob },
-            testAddress,
-            address2
-          );
+          try {
+            const response = await fetch("/api/checkCreditScore", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                first_name,
+                last_name,
+                duration_at_address_check,
+                dob,
+                address,
+                address2,
+              }),
+            });
 
-          const parser = new DOMParser();
-          const xmlDoc = parser.parseFromString(
-            result as string,
-            "application/xml"
-          );
-          const scoreNode = xmlDoc.getElementsByTagNameNS(
-            "http://www.equifax.ca/XMLSchemas/EfxToCust",
-            "Value"
-          )[0];
-          const clientErrorNode = xmlDoc.getElementsByTagNameNS(
-            "http://www.equifax.ca/XMLSchemas/EfxToCust",
-            "RejectCode"
-          )[0];
-          const serverErrorNode = xmlDoc.getElementsByTagNameNS(
-            "http://www.equifax.ca/XMLSchemas/EfxToCust",
-            "Error"
-          )[0];
-          const clientErrorNode2 = xmlDoc.getElementsByTagNameNS(
-            "http://www.equifax.ca/XMLSchemas/EfxToCust",
-            "HitCode"
-          )[0];
+            if (!response.ok) {
+              throw new Error("Failed to fetch credit score");
+            }
+            const result = await response.text();
+            console.log({ result });
 
-          if (clientErrorNode) {
-            setClientError(
-              "Sorry we could not find your profile. Please ensure all details are correct"
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(
+              result as string,
+              "application/xml"
             );
-          } else if (serverErrorNode) {
-            setServerError(
-              "Something unexpected happened. Please try again later"
-            );
-          } else if (clientErrorNode2) {
-            setClientError(
-              "Sorry we could not find your profile. Please ensure all details are correct"
-            );
-          } else {
-            setScoreNumber(
-              Number(scoreNode.textContent?.substring(2) as string)
-            );
-          }
+            const scoreNode = xmlDoc.getElementsByTagNameNS(
+              "http://www.equifax.ca/XMLSchemas/EfxToCust",
+              "Value"
+            )[0];
+            const clientErrorNode = xmlDoc.getElementsByTagNameNS(
+              "http://www.equifax.ca/XMLSchemas/EfxToCust",
+              "RejectCode"
+            )[0];
+            const serverErrorNode = xmlDoc.getElementsByTagNameNS(
+              "http://www.equifax.ca/XMLSchemas/EfxToCust",
+              "Error"
+            )[0];
+            const clientErrorNode2 = xmlDoc.getElementsByTagNameNS(
+              "http://www.equifax.ca/XMLSchemas/EfxToCust",
+              "HitCode"
+            )[0];
 
+            if (clientErrorNode) {
+              setClientError(
+                "Sorry we could not find your profile. Please ensure all details are correct"
+              );
+            } else if (serverErrorNode) {
+              setServerError(
+                "Something unexpected happened. Please try again later"
+              );
+            } else if (clientErrorNode2) {
+              setClientError(
+                "Sorry we could not find your profile. Please ensure all details are correct"
+              );
+            } else {
+              setScoreNumber(
+                Number(scoreNode.textContent?.substring(2) as string)
+              );
+            }
+          } catch (e) {}
           setSubmitting(false); // Reset the submitting state
           setShowModal(true);
         }}
