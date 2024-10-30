@@ -53,6 +53,7 @@ export const checkCreditScore = async (
   address2: string | undefined
 ) => {
   const { access_token } = await get_equifax_token();
+  console.log({ access_token }, process.env.API_TEST_URL);
   /* const realname = ` <Subject subjectType="SUBJ">
                           <SubjectName>
                             <LastName>TASSIS</LastName>
