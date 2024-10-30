@@ -137,7 +137,6 @@ const MyForm = () => {
           setScoreNumber(null);
           setClientError(null);
           setServerError(null);
-          console.log("Form data:", values);
           const {
             first_name,
             last_name,
@@ -150,7 +149,6 @@ const MyForm = () => {
           } = values;
           const [street_number, ...rest] = street_address.split(" ");
           const [street_number2, ...rest2] = street_address2!.split(" ");
-          console.log({ scoreNumber });
           const address = `<Address addressType='CURR'>
                 <CivicNumber>${street_number}</CivicNumber>
                 <StreetName>${rest.join(" ")} ${
@@ -193,7 +191,6 @@ const MyForm = () => {
               throw new Error("Failed to fetch credit score");
             }
             const result = await response.text();
-            console.log({ result });
 
             const parser = new DOMParser();
             const xmlDoc = parser.parseFromString(
@@ -225,7 +222,9 @@ const MyForm = () => {
               setServerError(
                 "Something unexpected happened. Please try again later"
               );
-            } else if (clientErrorNode2) {
+            } else if (
+              clientErrorNode2.getAttribute("description") === "NO HIT"
+            ) {
               setClientError(
                 "Sorry we could not find your profile. Please ensure all details are correct"
               );

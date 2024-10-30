@@ -68,12 +68,6 @@ const AddressField = ({
       }
     );
 
-    console.log({
-      street_address,
-      city,
-      province,
-      postalCode,
-    });
     setFieldValue(names[0], street_address);
     setFieldValue(names[1], city);
     setFieldValue(names[2], province);

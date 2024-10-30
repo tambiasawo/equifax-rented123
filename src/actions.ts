@@ -114,6 +114,6 @@ export const checkCreditScore = async (
 
     return result;
   } catch (error) {
-    console.log("Error", error);
+    console.log("An error just occured", error);
   }
 };

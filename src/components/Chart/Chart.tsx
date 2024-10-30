@@ -1,5 +1,5 @@
 "use client";
-import {  AlertTitle, Modal, Paper, Typography } from "@mui/material";
+import { AlertTitle, Modal, Paper, Typography } from "@mui/material";
 import { useEffect } from "react";
 import GaugeChart from "react-gauge-chart";
 import Tooltip from "@mui/material/Tooltip";
@@ -48,7 +48,6 @@ const GuageChart = ({
     }
   }, []);
 
-  console.log({ error });
   return (
     <Modal
       open={showModal}
@@ -132,8 +131,7 @@ const GuageChart = ({
         >
           <AlertTitle>No Record Found</AlertTitle>
           <Typography variant="body1" textAlign={"center"} color="red">
-            We could not find a credit record for this user. Please verify the
-            information and try again.
+            {error}
           </Typography>
           <Typography
             variant="body2"

@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import { checkCreditScore, get_equifax_token } from "@/actions";
 
 export async function POST(req: Request) {
@@ -24,28 +23,14 @@ export async function POST(req: Request) {
     );
 
     // Return the XML response directly
-    const res = new Response(xmlResult, {
+    const result = new Response(xmlResult, {
       status: 200,
       headers: {
         "Content-Type": "application/xml",
       },
     });
-    /*     const result = await parseStringPromise(xmlResponse);
 
-    const score =
-      result.EfxTransmit.EfxReport[0].CNConsumerCreditReports[0]
-        .CNConsumerCreditReport[0].CNHeader[0].Request[0].Value[0];
-    const clientError =
-      result.EfxTransmit.EfxReport[0].CNConsumerCreditReports[0]
-        .CNConsumerCreditReport[0].CNHeader[0].Request[0].RejectCode;
-    const serverError =
-      result.EfxTransmit.EfxReport[0].CNConsumerCreditReports[0]
-        .CNConsumerCreditReport[0].CNHeader[0].Request[0].Error;
-
-    return NextResponse.json({ score, clientError, serverError });
-   */
-    console.log(res);
-    return res;
+    return result;
   } catch (error: any) {
     console.error("Error in credit score check:", error);
 
