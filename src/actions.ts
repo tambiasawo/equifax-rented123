@@ -20,11 +20,11 @@ export async function get_equifax_token() {
       body,
     }
   );
-
   // Check if authentication response is successful
   if (!authResponse.ok) {
     const authError = await authResponse.json();
     console.error("Authentication Error:", authError);
+    console.log({ authError });
     return {
       statusCode: 500,
       body: JSON.stringify({
