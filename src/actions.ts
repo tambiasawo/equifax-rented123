@@ -34,6 +34,7 @@ export async function get_equifax_token() {
     };
   }
   const token = await authResponse.json();
+  console.log({ token });
   return token;
 }
 
