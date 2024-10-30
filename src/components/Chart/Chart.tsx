@@ -1,5 +1,5 @@
 "use client";
-import { Alert, AlertTitle, Modal, Paper, Typography } from "@mui/material";
+import {  AlertTitle, Modal, Paper, Typography } from "@mui/material";
 import { useEffect } from "react";
 import GaugeChart from "react-gauge-chart";
 import Tooltip from "@mui/material/Tooltip";

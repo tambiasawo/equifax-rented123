@@ -42,7 +42,7 @@ const MyForm = () => {
   const [clientError, setClientError] = useState<string | null>(null);
   const [serverError, setServerError] = useState<string | null>(null);
 
-  let initialValues: FormValues = {
+  const initialValues: FormValues = {
     first_name: "",
     last_name: "",
     dob: "",

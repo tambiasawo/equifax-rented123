@@ -39,11 +39,11 @@ export async function get_equifax_token() {
 
 export const checkCreditScore = async (
   {
-    first_name,
-    last_name,
+    // first_name,
+    //last_name,
     duration_at_address_check,
-    dob,
-  }: {
+  }: //dob,
+  {
     first_name: string;
     last_name: string;
     duration_at_address_check: string;
@@ -53,7 +53,7 @@ export const checkCreditScore = async (
   address2: string | undefined
 ) => {
   const { access_token } = await get_equifax_token();
-  const realname = ` <Subject subjectType="SUBJ">
+  /* const realname = ` <Subject subjectType="SUBJ">
                           <SubjectName>
                             <LastName>TASSIS</LastName>
                             <FirstName>George</FirstName>
@@ -61,7 +61,7 @@ export const checkCreditScore = async (
                           <SocialInsuranceNumber></SocialInsuranceNumber>
                           <DateOfBirth>1980-01-01</DateOfBirth>
                           <Occupation></Occupation>
-                        </Subject>`;
+                        </Subject>`; */
   const testname = `<Subject subjectType="SUBJ">
       <SubjectName>
         <LastName>TASSIS</LastName>
