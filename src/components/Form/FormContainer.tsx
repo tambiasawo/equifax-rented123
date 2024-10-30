@@ -158,7 +158,7 @@ const MyForm = () => {
                 <Province code="ON"/>
                 <PostalCode>M5V3M8</PostalCode>
               </Address>`;
-          const address = `<Address addressType='CURR'>
+         /*  const address = `<Address addressType='CURR'>
                 <CivicNumber>${street_number}</CivicNumber>
                 <StreetName>${rest.join(" ")} ${
             unit_number && "#" + unit_number
@@ -168,7 +168,7 @@ const MyForm = () => {
                   values.province_territory as string
                 )}"/>
                 <PostalCode>${values.postal_code2}</PostalCode>
-              </Address>`;
+              </Address>`; */
 
           const address2 = `<Address addressType='PREV'>
                 <CivicNumber>${street_number2}</CivicNumber>
