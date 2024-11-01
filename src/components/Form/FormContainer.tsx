@@ -186,8 +186,10 @@ const MyForm = () => {
                 address2,
               }),
             });
-
+            console.log(response)
             if (!response.ok) {
+              console.log("response not ok");
+              setServerError("Something unexpected happened. Please try again");
               throw new Error("Failed to fetch credit score");
             }
             const result = await response.text();

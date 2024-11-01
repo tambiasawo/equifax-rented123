@@ -13,7 +13,9 @@ export async function POST(req: Request) {
   try {
     // Fetch access token
     const { access_token } = await get_equifax_token();
-
+    if (!access_token) {
+      throw new Error(`Authentication Failed`);
+    }
     // Run credit score check with token and get the XML response
     const xmlResult = await checkCreditScore(
       { first_name, last_name, duration_at_address_check, dob },

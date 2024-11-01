@@ -11,10 +11,10 @@ export async function get_equifax_token() {
     grant_type: "client_credentials",
     scope: "https://api.equifax.ca/inquiry/1.0/sts",
   });
-  const username = "PxTGZ8jpBRqoGW5DhTD2v1tkuAYSFKpK";
-  const password = "WXIoDSwmoY3g0afR";
+  const username = process.env.CLIENT_ID;
+  const password = process.env.CLIENT_SECRET;
   const authHeader = "Basic " + btoa(`${username}:${password}`);
-
+  console.log({ username });
   const authResponse = await fetch(
     "https://api.uat.equifax.ca/v2/oauth/token",
     {
