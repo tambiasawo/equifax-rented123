@@ -14,7 +14,10 @@ export async function get_equifax_token() {
   const username = process.env.CLIENT_ID;
   const password = process.env.CLIENT_SECRET;
   const authHeader = "Basic " + btoa(`${username}:${password}`);
-  console.log({ username });
+  console.log(
+    { username, password },
+    process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY
+  );
   const authResponse = await fetch(
     "https://api.uat.equifax.ca/v2/oauth/token",
     {
