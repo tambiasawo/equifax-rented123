@@ -40,7 +40,6 @@ const AddressField = ({
     libraries: ["places"],
     region: "ca",
   });
-  console.log("process.env", process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY);
   const handleOnPlacesChanged = (names: string[]) => {
     let address;
     if (inputRef.current) {
