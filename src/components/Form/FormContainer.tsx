@@ -59,9 +59,7 @@ const MyForm = () => {
     postal_code2: "",
     privacy_agreement: false,
   };
-  console.log("process.env", process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY);
-  console.log("process.env again");
-
+ 
   useEffect(() => {}, []);
 
   const handleClose = () => setShowModal(false);

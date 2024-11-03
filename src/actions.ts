@@ -52,7 +52,7 @@ export const checkCreditScore = async (
   access_token: string
 ) => {
   const { first_name, last_name, duration_at_address_check, dob } = params;
-  console.log({ access_token, duration_at_address_check });
+  console.log("only", { access_token });
 
   const subject = ` <Subject subjectType="SUBJ">
                           <SubjectName>
