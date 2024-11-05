@@ -13,14 +13,14 @@ export async function get_equifax_token() {
   });
   const username = process.env.CLIENT_ID; //"PxTGZ8jpBRqoGW5DhTD2v1tkuAYSFKpK"; //
   const password = process.env.CLIENT_SECRET;
- /*  setTimeout(() => {
+  /*  setTimeout(() => {
     console.log("timeout function", { username, password });
   }, 800); */
 
   if (username && password) {
-    console.log({ username, password });
+    console.log("these are the credentials", { username, password });
     const authHeader = "Basic " + btoa(`${username}:${password}`);
-
+    console.log({ authHeader });
     const authResponse = await fetch(
       "https://api.uat.equifax.ca/v2/oauth/token",
       {
