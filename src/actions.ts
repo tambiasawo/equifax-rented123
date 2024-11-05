@@ -11,37 +11,43 @@ export async function get_equifax_token() {
     grant_type: "client_credentials",
     scope: "https://api.equifax.ca/inquiry/1.0/sts",
   });
-  const username = "PxTGZ8jpBRqoGW5DhTD2v1tkuAYSFKpK"; //process.env.CLIENT_ID;
-  const password = "Jw7TZdgj4h5kv2bc"; //process.env.CLIENT_SECRET;
-  const authHeader = "Basic " + btoa(`${username}:${password}`);
-  console.log(
-    { username, password },
-  );
-  const authResponse = await fetch(
-    "https://api.uat.equifax.ca/v2/oauth/token",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        Authorization: authHeader,
-      },
-      body,
+  const username = process.env.CLIENT_ID; //"PxTGZ8jpBRqoGW5DhTD2v1tkuAYSFKpK"; //
+  const password = process.env.CLIENT_SECRET;
+ /*  setTimeout(() => {
+    console.log("timeout function", { username, password });
+  }, 800); */
+
+  if (username && password) {
+    console.log({ username, password });
+    const authHeader = "Basic " + btoa(`${username}:${password}`);
+
+    const authResponse = await fetch(
+      "https://api.uat.equifax.ca/v2/oauth/token",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Authorization: authHeader,
+        },
+        body,
+      }
+    );
+
+    // Check if authentication response is successful
+    if (!authResponse.ok) {
+      const authError = await authResponse.json();
+      console.error("Authentication Error:", authError);
+      return {
+        statusCode: 500,
+        body: JSON.stringify({
+          message: "Authentication failed",
+          details: authError,
+        }),
+      };
     }
-  );
-  // Check if authentication response is successful
-  if (!authResponse.ok) {
-    const authError = await authResponse.json();
-    console.error("Authentication Error:", authError);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({
-        message: "Authentication failed",
-        details: authError,
-      }),
-    };
+    const token = await authResponse.json();
+    return token;
   }
-  const token = await authResponse.json();
-  return token;
 }
 
 export const checkCreditScore = async (
