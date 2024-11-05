@@ -13,6 +13,7 @@ export async function POST(req: Request) {
   try {
     // Fetch access token
     const { access_token } = await get_equifax_token();
+    console.log("getting acces token", { access_token });
     if (!access_token) {
       throw new Error(`Authentication Failed`);
     }
