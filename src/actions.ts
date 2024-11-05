@@ -11,43 +11,47 @@ export async function get_equifax_token() {
     grant_type: "client_credentials",
     scope: "https://api.equifax.ca/inquiry/1.0/sts",
   });
-  const username = process.env.CLIENT_ID; //"PxTGZ8jpBRqoGW5DhTD2v1tkuAYSFKpK"; //
-  const password = process.env.CLIENT_SECRET;
-  /*  setTimeout(() => {
+
+  let token;
+  setTimeout(async () => {
+    const username = process.env.CLIENT_ID; //"PxTGZ8jpBRqoGW5DhTD2v1tkuAYSFKpK"; //
+    const password = process.env.CLIENT_SECRET;
     console.log("timeout function", { username, password });
-  }, 800); */
 
-  if (username && password) {
-    console.log("these are the credentials", { username, password });
-    const authHeader = "Basic " + btoa(`${username}:${password}`);
-    console.log({ authHeader });
-    const authResponse = await fetch(
-      "https://api.uat.equifax.ca/v2/oauth/token",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          Authorization: authHeader,
-        },
-        body,
+    if (username && password) {
+      console.log("these are the credentials", { username, password });
+      const authHeader = "Basic " + btoa(`${username}:${password}`);
+      console.log({ authHeader });
+      const authResponse = await fetch(
+        "https://api.uat.equifax.ca/v2/oauth/token",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            Authorization: authHeader,
+          },
+          body,
+        }
+      );
+
+      // Check if authentication response is successful
+      if (!authResponse.ok) {
+        const authError = await authResponse.json();
+        console.error("Authentication Error:", authError);
+        return {
+          statusCode: 500,
+          body: JSON.stringify({
+            message: "Authentication failed",
+            details: authError,
+          }),
+        };
       }
-    );
-
-    // Check if authentication response is successful
-    if (!authResponse.ok) {
-      const authError = await authResponse.json();
-      console.error("Authentication Error:", authError);
-      return {
-        statusCode: 500,
-        body: JSON.stringify({
-          message: "Authentication failed",
-          details: authError,
-        }),
-      };
+      token = await authResponse.json();
     }
-    const token = await authResponse.json();
-    return token;
-  }
+  }, 1000);
+
+  console.log("after timeout", { token });
+  return token;
 }
 
 export const checkCreditScore = async (
