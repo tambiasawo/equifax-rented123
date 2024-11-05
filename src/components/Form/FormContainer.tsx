@@ -59,7 +59,7 @@ const MyForm = () => {
     postal_code2: "",
     privacy_agreement: false,
   };
- 
+
   useEffect(() => {}, []);
 
   const handleClose = () => setShowModal(false);
@@ -456,7 +456,7 @@ const MyForm = () => {
                   label={
                     <span>
                       By checking this box, you agree to us performing a credit
-                      check on you and to our
+                      check on you and to our{" "}
                       <a href="https://rented123.com/privacy-policy/">
                         privacy policy
                       </a>
@@ -466,6 +466,7 @@ const MyForm = () => {
               )}
             </Field>
             <Button
+              sx={{ marginTop: "10px" }}
               type="submit"
               variant="contained"
               color="primary"
