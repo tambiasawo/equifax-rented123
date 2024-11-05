@@ -15,7 +15,6 @@ import {
 import AddressField from "./AddressField";
 import { getProvinceCode } from "../../utils";
 import Speedometer from "../Chart/Chart";
-import { checkCreditScore } from "@/actions";
 
 type FormValues = {
   first_name: string;
@@ -250,7 +249,7 @@ const MyForm = () => {
           setFieldValue,
         }) => (
           <Form className="form-container">
-            <h2>Complete your Profile</h2>
+            <h2 className="subtitle">Fill out the form below</h2>
             <Field
               name="first_name"
               as={TextField}
@@ -466,6 +465,7 @@ const MyForm = () => {
               )}
             </Field>
             <Button
+            className="submit-button"
               sx={{ marginTop: "10px" }}
               type="submit"
               variant="contained"

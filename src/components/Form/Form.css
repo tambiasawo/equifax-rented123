@@ -1,12 +1,24 @@
-.form-container{
-    width: 80%;
-    margin: 20px auto;
-    display: flex;
-    flex-direction: column;
-    row-gap: 10px;
-
+.form-container {
+  width: 80%;
+  margin: 20px auto;
+  display: flex;
+  flex-direction: column;
+  row-gap: 10px;
+}
+.subtitle {
+  margin-bottom: -10px;
+  font-size: 18px;
+}
+.submit-button {
+  margin: 20px auto 0 !important;
+  width: 50%;
 }
 
-h2{
-    margin-bottom: -10px;
+@media screen and (max-width: 640px) {
+  .subtitle {
+    text-align: center;
+  }
+  .submit-button {
+    width: 100% !important;
+  }
 }
