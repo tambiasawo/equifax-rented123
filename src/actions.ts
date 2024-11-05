@@ -12,13 +12,11 @@ export async function get_equifax_token() {
     scope: "https://api.equifax.ca/inquiry/1.0/sts",
   });
 
-  const username = process.env.CLIENT_ID; //"PxTGZ8jpBRqoGW5DhTD2v1tkuAYSFKpK"; //
-  const password = process.env.CLIENT_SECRET;
-  console.log("timeout function", { username, password });
+  const username = "PxTGZ8jpBRqoGW5DhTD2v1tkuAYSFKpK";
+  const password = "Jw7TZdgj4h5kv2bc";
 
   console.log("these are the credentials", { username, password });
   const authHeader = "Basic " + btoa(`${username}:${password}`);
-  console.log({ authHeader });
   const authResponse = await fetch(
     "https://api.uat.equifax.ca/v2/oauth/token",
     {
@@ -54,7 +52,6 @@ export const checkCreditScore = async (
   access_token: string
 ) => {
   const { first_name, last_name, duration_at_address_check, dob } = params;
-  console.log("only", { access_token });
 
   const subject = ` <Subject subjectType="SUBJ">
                           <SubjectName>
