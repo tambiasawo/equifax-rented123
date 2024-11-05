@@ -90,7 +90,7 @@ const GuageChart = ({
               `${Math.round((value / 100) * 600) + 300}`
             }
           />
-          <Tooltip
+          {/*        <Tooltip
             title={
               <span style={{ fontSize: "12px", lineHeight: "1.5em" }}>
                 This is the minimum acceptable score to get into our portal if
@@ -102,12 +102,12 @@ const GuageChart = ({
             <span style={{ position: "absolute", top: "10px", right: "10px" }}>
               Min. Score: 580
             </span>
-          </Tooltip>
+          </Tooltip> */}
           <div style={{ padding: "20px", textAlign: "center" }}>
             <span className="title-score">Your Credit Score</span>
             <h1> {score}</h1>
-
-            <span>Please close this tab and return to the previous tab</span>
+            {/*             <span>Please close this tab and return to the previous tab</span>
+             */}{" "}
             {/* Styles for positioning the marks */}
           </div>
         </Paper>

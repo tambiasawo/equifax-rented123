@@ -15,7 +15,6 @@ export async function get_equifax_token() {
   const username = "PxTGZ8jpBRqoGW5DhTD2v1tkuAYSFKpK";
   const password = "Jw7TZdgj4h5kv2bc";
 
-  console.log("these are the credentials", { username, password });
   const authHeader = "Basic " + btoa(`${username}:${password}`);
   const authResponse = await fetch(
     "https://api.uat.equifax.ca/v2/oauth/token",
