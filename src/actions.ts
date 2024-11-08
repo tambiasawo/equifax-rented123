@@ -27,6 +27,8 @@ export async function get_equifax_token() {
       body,
     }
   );
+  console.log('customer code',process.env.CUSTOMER_CODE);
+
   console.log({ username, password, authHeader, authResponse });
   // Check if authentication response is successful
   if (!authResponse.ok) {
@@ -51,7 +53,6 @@ export const checkCreditScore = async (
   access_token: string
 ) => {
   const { first_name, last_name, duration_at_address_check, dob } = params;
-  console.log(process.env.CUSTOMER_CODE);
 
   const subject = ` <Subject subjectType="SUBJ">
                           <SubjectName>
