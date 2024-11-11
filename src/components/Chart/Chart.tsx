@@ -1,18 +1,21 @@
 "use client";
 import { AlertTitle, Modal, Paper, Typography } from "@mui/material";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import GaugeChart from "react-gauge-chart";
-import Tooltip from "@mui/material/Tooltip";
 import "./Chart.css";
+import DownloadReportButton from "../DownloadCreditReport";
+
 const GuageChart = ({
   score,
   showModal,
   handleClose,
   error,
+  userData,
 }: {
   score: number;
   showModal: boolean;
   handleClose: () => void;
+  userData: any;
   error: string | null;
 }) => {
   const normalizedScore = (score - 300) / (900 - 300);
@@ -55,42 +58,44 @@ const GuageChart = ({
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
-      {!error ? (
-        <Paper
-          id="gauge-chart-container"
-          style={{
-            top: "7%",
-            position: "relative",
-            width: "80%",
-            margin: "20px auto",
-            padding: "20px 0",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            rowGap: "30px",
-            alignItems: "center",
-            outline: "none",
-          }}
-          elevation={2}
-        >
-          <GaugeChart
-            id="gauge-chart2"
-            nrOfLevels={6}
-            percent={normalizedScore}
-            textColor={
-              normalizedScore <= 0.3
-                ? "#FF0000"
-                : normalizedScore <= 0.6
-                ? "#ff6600"
-                : "#00FF00"
-            }
-            style={{ width: "60%" }}
-            colors={["#FF0000", "#00FF00"]}
-            formatTextValue={(value: any) =>
-              `${Math.round((value / 100) * 600) + 300}`
-            }
-          />
-          {/*        <Tooltip
+      <div>
+        {!error ? (
+          <Paper
+            id="gauge-chart-container"
+            style={{
+              top: "7%",
+              position: "relative",
+              width: "80%",
+              margin: "20px auto",
+              padding: "20px 0",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              rowGap: "30px",
+              alignItems: "center",
+              outline: "none",
+            }}
+            elevation={2}
+          >
+            <GaugeChart
+              id="gauge-chart2"
+              nrOfLevels={6}
+              percent={normalizedScore}
+              textColor={
+                normalizedScore <= 0.3
+                  ? "#FF0000"
+                  : normalizedScore <= 0.6
+                  ? "#ff6600"
+                  : "#00FF00"
+              }
+              style={{ width: "60%" }}
+              colors={["#FF0000", "#00FF00"]}
+              formatTextValue={(value: any) =>
+                `${Math.round((value / 100) * 600) + 300}`
+              }
+            />
+            {/* 
+            <Tooltip
             title={
               <span style={{ fontSize: "12px", lineHeight: "1.5em" }}>
                 This is the minimum acceptable score to get into our portal if
@@ -103,52 +108,54 @@ const GuageChart = ({
               Min. Score: 580
             </span>
           </Tooltip> */}
-          <div style={{ padding: "20px", textAlign: "center" }}>
-            <span className="title-score">Your Credit Score</span>
-            <h1> {score}</h1>
-            {/*             <span>Please close this tab and return to the previous tab</span>
-             */}{" "}
-            {/* Styles for positioning the marks */}
-          </div>
-        </Paper>
-      ) : (
-        <div
-          style={{
-            top: "7%",
-            position: "relative",
-            width: "80%",
-            margin: "20px auto",
-            padding: "20px",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            rowGap: "30px",
-            alignItems: "center",
-            outline: "none",
-            background: "white",
-            borderRadius: "5px",
-          }}
-        >
-          <AlertTitle>No Record Found</AlertTitle>
-          <Typography variant="body1" textAlign={"center"} color="red">
-            {error}
-          </Typography>
-          <Typography
-            variant="body2"
-            color="textSecondary"
-            textAlign={"center"}
+            <div style={{ padding: "20px", textAlign: "center" }}>
+              <span className="title-score">Your Credit Score</span>
+              <h1> {score}</h1>
+              {/*             <span>Please close this tab and return to the previous tab</span>
+               */}{" "}
+              {/* Styles for positioning the marks */}
+              <DownloadReportButton userData={userData} />
+            </div>
+          </Paper>
+        ) : (
+          <div
+            style={{
+              top: "7%",
+              position: "relative",
+              width: "80%",
+              margin: "20px auto",
+              padding: "20px",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              rowGap: "30px",
+              alignItems: "center",
+              outline: "none",
+              background: "white",
+              borderRadius: "5px",
+            }}
           >
-            If you believe this is an error, contact{" "}
-            <a
-              href="mailto:rob@rented123.com"
-              style={{ color: "rgba(0, 0, 0, 0.6)" }}
+            <AlertTitle>No Record Found</AlertTitle>
+            <Typography variant="body1" textAlign={"center"} color="red">
+              {error}
+            </Typography>
+            <Typography
+              variant="body2"
+              color="textSecondary"
+              textAlign={"center"}
             >
-              support
-            </a>{" "}
-            for assistance.
-          </Typography>
-        </div>
-      )}
+              If you believe this is an error, contact{" "}
+              <a
+                href="mailto:rob@rented123.com"
+                style={{ color: "rgba(0, 0, 0, 0.6)" }}
+              >
+                support
+              </a>{" "}
+              for assistance.
+            </Typography>
+          </div>
+        )}
+      </div>
     </Modal>
   );
 };

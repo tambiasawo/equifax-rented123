@@ -40,6 +40,12 @@ const MyForm = () => {
   const [scoreNumber, setScoreNumber] = useState<number | null>();
   const [clientError, setClientError] = useState<string | null>(null);
   const [serverError, setServerError] = useState<string | null>(null);
+  const [userData, setUserData] = useState({
+    first_name: "",
+    last_name: "",
+    dob: "",
+    address: "",
+  });
 
   const initialValues: FormValues = {
     first_name: "",
@@ -146,6 +152,17 @@ const MyForm = () => {
             unit_number,
             unit_number2,
           } = values;
+          setUserData({
+            first_name,
+            last_name,
+            dob,
+            address:
+              street_address +
+              ", " +
+              values.city +
+              ", " +
+              values.province_territory,
+          });
           const [street_number, ...rest] = street_address.split(" ");
           const [street_number2, ...rest2] = street_address2!.split(" ");
           const address = `<Address addressType='CURR'>
@@ -465,7 +482,7 @@ const MyForm = () => {
               )}
             </Field>
             <Button
-            className="submit-button"
+              className="submit-button"
               sx={{ marginTop: "10px" }}
               type="submit"
               variant="contained"
@@ -479,6 +496,7 @@ const MyForm = () => {
       </Formik>
 
       <Speedometer
+        userData={userData}
         score={scoreNumber as number}
         showModal={showModal}
         handleClose={handleClose}
