@@ -3,7 +3,7 @@ import html2canvas from "html2canvas";
 import { logoImage } from "@/utils";
 import { Button } from "@mui/material";
 
-export const generateCreditReportPDF = async (userData) => {
+export const generateCreditReportPDF = async (userData: any) => {
   const { first_name, last_name, address, dob } = userData;
   const pdf = new jsPDF();
   const pageWidth = pdf.internal.pageSize.getWidth();
@@ -41,7 +41,7 @@ export const generateCreditReportPDF = async (userData) => {
   pdf.text(`Date of Birth: ${dob}`, 20, 110);
 
   // Capture GaugeChart and add it to the PDF
-  const chartElement = document.getElementById("gauge-chart2");
+  const chartElement = document.getElementById("gauge-chart2") as HTMLElement;
   const chartImage = await html2canvas(chartElement).then((canvas) =>
     canvas.toDataURL("image/png")
   );
@@ -72,7 +72,7 @@ export const generateCreditReportPDF = async (userData) => {
   pdf.save("credit_report.pdf");
 };
 
-export default function DownloadReportButton({ userData }) {
+export default function DownloadReportButton({ userData }:{userData:any}) {
   return (
     <div>
       <div id="gauge-chart"></div>
