@@ -23,7 +23,7 @@ export async function POST(req: Request) {
       address2,
       access_token
     );
-
+    console.log("here is a", { dob });
     // Return the XML response directly
     const result = new Response(xmlResult, {
       status: 200,
