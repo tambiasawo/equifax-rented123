@@ -267,7 +267,7 @@ const MyForm = () => {
           setFieldValue,
         }) => (
           <Form className="form-container">
-            <h2 className="subtitle">Fill out the form below</h2>
+            <h2 className="subtitle">Fill out the form fields below</h2>
             <Field
               name="first_name"
               as={TextField}
