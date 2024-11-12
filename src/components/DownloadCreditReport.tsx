@@ -3,7 +3,15 @@ import html2canvas from "html2canvas";
 import { logoImage } from "@/utils";
 import { Button } from "@mui/material";
 
-export const generateCreditReportPDF = async (userData: any) => {
+export const generateCreditReportPDF = async (
+  userData: {
+    first_name: string;
+    last_name: string;
+    dob: string;
+    address: string;
+  },
+  score: number
+) => {
   const { first_name, last_name, address, dob } = userData;
   const pdf = new jsPDF();
   const pageWidth = pdf.internal.pageSize.getWidth();
@@ -69,10 +77,104 @@ export const generateCreditReportPDF = async (userData: any) => {
     130 + chartHeight + 10
   );
   // Download PDF
-  pdf.save("credit_report.pdf");
+  pdf.save("Credit Report.pdf");
+
+  //save pdf
+  const pdfBlob = pdf.output("blob");
+  let goodCreditStanding = score > 580; //580 is minimum score
+  await saves3LinkInWordPress(
+    pdfBlob,
+    goodCreditStanding,
+    `${last_name}_${dob}_credit_report`,
+    last_name,
+    dob
+  );
 };
 
-export default function DownloadReportButton({ userData }:{userData:any}) {
+export const saves3LinkInWordPress = async (
+  PDFfile: Blob,
+  goodCreditStanding: boolean,
+  fileName: string,
+  last_name: string,
+  dob: string
+) => {
+  // Upload to S3 and wait for the result
+  try {
+    const s3Url = await saveToS3(PDFfile, fileName); // This is the S3 URL where the PDF is stored
+    const response = await fetch("/api/store-url", {
+      method: "POST",
+      body: JSON.stringify({
+        last_name,
+        dob,
+        fileName,
+        report_url: s3Url,
+        goodCreditStanding,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json", // Optional: Specify that you expect a JSON response
+      },
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Error saving report URL:", errorData);
+      return "An error occured";
+    } else {
+      const responseData = await response.json();
+      console.log("Report URL saved successfully:", responseData);
+      return s3Url;
+    }
+  } catch (error) {
+    console.log(error);
+    console.error("Failed to upload PDF:", error);
+    return "An error occured";
+  }
+};
+
+const saveToS3 = async (PDFfile: Blob, fileName: string) => {
+  try {
+    const PDFfileBase64 = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(PDFfile);
+      reader.onloadend = () => {
+        const base64data =
+          (typeof reader.result === "string" && reader.result?.split(",")[1]) ||
+          ""; // Extract base64 part only
+        resolve(base64data);
+      };
+      reader.onerror = reject;
+    });
+
+    const response = await fetch("/api/store-pdf", {
+      method: "POST",
+      body: JSON.stringify({
+        PDFfile: PDFfileBase64,
+        fileName,
+      }),
+      headers: { "Content-Type": "application/json" },
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.log({ errorData });
+
+      return "An error occurred";
+    }
+    const data = await response.json();
+    console.log(`File uploaded successfully`);
+    return data.location; // This is the S3 URL
+  } catch (err) {
+    console.error("Error uploading file:", err);
+    throw err; // Return the error in case something goes wrong
+  }
+};
+
+export default function DownloadReportButton({
+  userData,
+  score,
+}: {
+  userData: any;
+  score: number;
+}) {
   return (
     <div>
       <div id="gauge-chart"></div>
@@ -81,7 +183,7 @@ export default function DownloadReportButton({ userData }:{userData:any}) {
         type="submit"
         variant="contained"
         color="primary"
-        onClick={() => generateCreditReportPDF(userData)}
+        onClick={() => generateCreditReportPDF(userData, score)}
       >
         Download Credit Report
       </Button>
