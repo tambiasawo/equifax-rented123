@@ -3,13 +3,14 @@ import html2canvas from "html2canvas";
 import { logoImage } from "@/utils";
 import { Button } from "@mui/material";
 
+type UserData = {
+  first_name: string;
+  last_name: string;
+  dob: string;
+  address: string;
+};
 export const generateCreditReportPDF = async (
-  userData: {
-    first_name: string;
-    last_name: string;
-    dob: string;
-    address: string;
-  },
+  userData: UserData,
   score: number
 ) => {
   const { first_name, last_name, address, dob } = userData;
@@ -172,7 +173,7 @@ export default function DownloadReportButton({
   userData,
   score,
 }: {
-  userData: any;
+  userData: UserData;
   score: number;
 }) {
   return (
