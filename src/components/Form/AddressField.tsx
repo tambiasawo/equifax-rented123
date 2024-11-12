@@ -19,6 +19,7 @@ type AddressFieldProperties = {
     value: any,
     shouldValidate?: boolean
   ) => Promise<void | FormikErrors<any>>;
+  label: string;
 };
 
 const AddressField = ({
@@ -29,6 +30,7 @@ const AddressField = ({
   errors,
   setFieldValue,
   values,
+  label,
 }: AddressFieldProperties) => {
   interface InputRef extends HTMLInputElement {
     getPlaces: () => any;
@@ -104,7 +106,8 @@ const AddressField = ({
           <Field
             name={names[0]}
             as={TextField}
-            label="Street Address"
+            label={label}
+            placeholder="Enter a Canadian street address"
             required
             type="address"
             fullWidth

@@ -332,6 +332,7 @@ const MyForm = () => {
                 "postal_code",
                 "unit_number",
               ]}
+              label={"Most Recent Street Address"}
               setFieldValue={setFieldValue}
               touchedFields={{
                 unit_number: touched.unit_number,
@@ -418,6 +419,7 @@ const MyForm = () => {
 
             {durationCheck === "no" && (
               <AddressField
+                label={"Last Street Address"}
                 names={[
                   "street_address2",
                   "city2",
