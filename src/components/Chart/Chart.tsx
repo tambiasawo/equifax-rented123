@@ -114,7 +114,7 @@ const GuageChart = ({
               {/*             <span>Please close this tab and return to the previous tab</span>
                */}{" "}
               {/* Styles for positioning the marks */}
-              <DownloadReportButton userData={userData} />
+              <DownloadReportButton userData={userData} score={score}/>
             </div>
           </Paper>
         ) : (
