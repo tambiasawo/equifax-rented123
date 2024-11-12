@@ -82,7 +82,7 @@ export const generateCreditReportPDF = async (
 
   //save pdf
   const pdfBlob = pdf.output("blob");
-  let goodCreditStanding = score > 580; //580 is minimum score
+  const goodCreditStanding = score > 580; //580 is minimum score
   await saves3LinkInWordPress(
     pdfBlob,
     goodCreditStanding,
