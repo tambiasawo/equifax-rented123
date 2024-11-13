@@ -3,13 +3,16 @@ import Divider from "@mui/material/Divider";
 import "./App.css";
 import Header from "@/components/Header/Header";
 import Form from "@/components/Form/FormContainer";
+import { Suspense } from "react";
 
 const App = () => {
   return (
     <div className="app">
       <Header />
       <Divider />
-      <Form />
+      <Suspense>
+        <Form />
+      </Suspense>
     </div>
   );
 };

@@ -90,7 +90,7 @@ const MyForm = () => {
     } else {
       verifyToken(token);
     }
-  }, [token, verifyToken]);
+  }, [token, verifyToken, router]);
 
   if (userVerified) {
     return (
