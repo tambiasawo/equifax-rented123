@@ -11,6 +11,7 @@ import {
   Radio,
   Button,
   Checkbox,
+  CircularProgress,
 } from "@mui/material";
 import AddressField from "./AddressField";
 import { getProvinceCode } from "../../utils";
@@ -94,7 +95,20 @@ const MyForm = () => {
       verifyToken(token);
     }
   }, [token, verifyToken, router]);
-
+  if (!userVerified) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "70vh", // Adjust height as needed
+        }}
+      >
+        <CircularProgress />
+      </div>
+    );
+  }
   if (userVerified) {
     return (
       <section>
