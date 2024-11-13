@@ -76,13 +76,16 @@ const MyForm = () => {
 
   const handleClose = () => setShowModal(false);
 
-  const verifyToken = async (token: string | null) => {
-    const activeToken = await getToken(token as string);
-    if (!activeToken) {
-      router.push("/404");
-    } else if (activeToken[0].product !== "equifax") router.push("/404");
-    else setUserVerified(true);
-  };
+  const verifyToken = React.useCallback(
+    async (token: string | null) => {
+      const activeToken = await getToken(token as string);
+      if (!activeToken) {
+        router.push("/404");
+      } else if (activeToken[0].product !== "equifax") router.push("/404");
+      else setUserVerified(true);
+    },
+    [router]
+  );
 
   React.useEffect(() => {
     if (!token) {
