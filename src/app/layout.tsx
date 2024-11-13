@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import Header from "@/components/Header/Header";
 
 export const metadata: Metadata = {
   title: "Credit Check | Rented123",
   description: "Rented123 Credit Check, powered by Equifax",
-  
 };
 
 export default function RootLayout({
@@ -14,7 +14,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <Header />
+        {children}
+      </body>
     </html>
   );
 }

@@ -1,4 +1,3 @@
-"use server";
 type Params = {
   first_name: string;
   last_name: string;
@@ -27,7 +26,7 @@ export async function get_equifax_token() {
       body,
     }
   );
-  console.log('customer code',process.env.CUSTOMER_CODE);
+  console.log("customer code", process.env.CUSTOMER_CODE);
 
   console.log({ username, password, authHeader, authResponse });
   // Check if authentication response is successful
@@ -115,5 +114,27 @@ export const checkCreditScore = async (
     return result;
   } catch (error) {
     console.log("An error just occured", error);
+  }
+};
+
+export const getToken = async (token: string) => {
+  try {
+    if (!token) {
+      return null; // Indicate that there’s no valid token
+    }
+
+    const response = await fetch(
+      `/api/get-token/?token=${encodeURIComponent(token)}`
+    );
+
+    if (!response.ok) {
+      return null; // Indicate invalid token
+    }
+
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.error("Error occurred while fetching token:", error);
+    return null; // Return null if an error occurred
   }
 };
