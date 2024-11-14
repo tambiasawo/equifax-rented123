@@ -26,7 +26,7 @@ export const provinces = [
   { label: "Nunavut", value: "Nunavut" },
   { label: "Ontario", value: "Ontario" },
   { label: "Prince Edward Island", value: "Prince Edward Island" },
-  { label: "Quebec", value: "Quebec" },
+  { label: "Québec", value: "Québec" },
   { label: "Saskatchewan", value: "Saskatchewan" },
   { label: "Yukon", value: "Yukon" },
 ];
@@ -64,7 +64,7 @@ export const getProvinceCode = (province_territory: string) => {
     case "Prince Edward Island":
       province_code = "PE";
       break;
-    case "Quebec":
+    case "Québec":
       province_code = "QC";
       break;
     case "Saskatchewan":

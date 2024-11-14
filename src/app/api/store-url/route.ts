@@ -3,7 +3,6 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
   const { last_name, dob, report_url, fileName, goodCreditStanding } =
     await req.json();
-  console.log({ last_name, dob, report_url, fileName, goodCreditStanding });
   try {
     const response = await fetch(
       `${process.env.WORDPRESS_BASE_API}/save-credit-check-report/`,

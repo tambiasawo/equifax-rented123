@@ -11,24 +11,19 @@ export async function get_equifax_token() {
     scope: "https://api.equifax.ca/inquiry/1.0/sts",
   });
 
-  const username = "PxTGZ8jpBRqoGW5DhTD2v1tkuAYSFKpK";
-  const password = "Jw7TZdgj4h5kv2bc";
+  const username = "nI5kW2LSTe8rgvY0cLjKqkcpFnf47CEL";
+  const password = "A1wZjV7bjvGaxiEO";
 
   const authHeader = "Basic " + btoa(`${username}:${password}`);
-  const authResponse = await fetch(
-    "https://api.uat.equifax.ca/v2/oauth/token",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        Authorization: authHeader,
-      },
-      body,
-    }
-  );
-  console.log("customer code", process.env.CUSTOMER_CODE);
+  const authResponse = await fetch("https://api.equifax.ca/v2/oauth/token", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      Authorization: authHeader,
+    },
+    body,
+  });
 
-  console.log({ username, password, authHeader, authResponse });
   // Check if authentication response is successful
   if (!authResponse.ok) {
     const authError = await authResponse.json();
@@ -62,7 +57,6 @@ export const checkCreditScore = async (
                           <DateOfBirth>${dob}</DateOfBirth>
                           <Occupation></Occupation>
                         </Subject>`;
-
   const xmlData = `
             <?xml version="1.0" encoding="utf-8"?>
               <CNCustTransmitToEfx xmlns="http://www.equifax.ca/XMLSchemas/CustToEfx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.equifax.ca/XMLSchemas/UAT/CNCustTransmitToEfx.xsd">
@@ -70,7 +64,7 @@ export const checkCreditScore = async (
                   <CustomerCode>${process.env.CUSTOMER_CODE}</CustomerCode>
                 <CustomerInfo>
                   <CustomerNumber>${
-                    process.env.UAT_CUSTOMER_NUMBER
+                    process.env.CUSTOMER_NUMBER
                   }</CustomerNumber>
                   <SecurityCode>${process.env.SECURITY_CODE}</SecurityCode>
                 </CustomerInfo>
@@ -96,7 +90,7 @@ export const checkCreditScore = async (
               </CNCustTransmitToEfx>          
             `;
   try {
-    const response = await fetch(`${process.env.API_TEST_URL}`, {
+    const response = await fetch(`${process.env.API_PROD_URL}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded", // Set the content type to XML
