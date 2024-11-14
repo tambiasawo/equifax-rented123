@@ -1,5 +1,5 @@
 "use client";
-import { AlertTitle, Modal, Paper, Typography } from "@mui/material";
+import { AlertTitle, Modal, Paper, Tooltip, Typography } from "@mui/material";
 import React, { useEffect } from "react";
 import GaugeChart from "react-gauge-chart";
 import "./Chart.css";
@@ -19,7 +19,6 @@ const GuageChart = ({
   error: string | null;
 }) => {
   const normalizedScore = (score - 300) / (900 - 300);
-
   useEffect(() => {
     const chartContainer = document.getElementById("gauge-chart-container");
 
@@ -94,27 +93,38 @@ const GuageChart = ({
                 `${Math.round((value / 100) * 600) + 300}`
               }
             />
-            {/* 
+
             <Tooltip
-            title={
-              <span style={{ fontSize: "12px", lineHeight: "1.5em" }}>
-                This is the minimum acceptable score to get into our portal if
-                applying for a property
+              title={
+                <span style={{ fontSize: "12px", lineHeight: "1.5em" }}>
+                  This is the minimum acceptable score to get a credit report.
+                </span>
+              }
+              arrow
+            >
+              <span
+                style={{ position: "absolute", top: "10px", right: "10px" }}
+              >
+                Min. Score: 580
               </span>
-            }
-            arrow
-          >
-            <span style={{ position: "absolute", top: "10px", right: "10px" }}>
-              Min. Score: 580
-            </span>
-          </Tooltip> */}
+            </Tooltip>
+
             <div style={{ padding: "20px", textAlign: "center" }}>
               <span className="title-score">Your Credit Score</span>
               <h1> {score}</h1>
-              {/*             <span>Please close this tab and return to the previous tab</span>
-               */}{" "}
-              {/* Styles for positioning the marks */}
-              <DownloadReportButton userData={userData} score={score}/>
+
+              {score !== null && score > 580 && (
+                <DownloadReportButton userData={userData} score={score} />
+              )}
+              {score < 580 && (
+                <p style={{marginTop: "20px"}}>
+                  Sorry, your credit score is too low. Please contact us @{" "}
+                  <a href="mailto:reports@rented123.com">
+                    reports@rented123.com
+                  </a>{" "}
+                  to help improve your credit
+                </p>
+              )}
             </div>
           </Paper>
         ) : (

@@ -279,7 +279,7 @@ const MyForm = () => {
 
               if (clientErrorNode) {
                 setClientError(
-                  "Sorry we could not find your profile. Please ensure all details are correct"
+                  "Sorry we could not find a credit profile for you. Please ensure all details are correct"
                 );
               } else if (serverErrorNode) {
                 setServerError(
@@ -289,7 +289,7 @@ const MyForm = () => {
                 clientErrorNode2.getAttribute("description") === "NO HIT"
               ) {
                 setClientError(
-                  "Sorry we could not find your profile. Please ensure all details are correct"
+                  "Sorry we could not find a credit your profile. Please ensure all details are correct"
                 );
               } else {
                 setScoreNumber(
