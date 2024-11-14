@@ -1,9 +1,11 @@
 "use client";
-import { AlertTitle, Modal, Paper, Tooltip, Typography } from "@mui/material";
 import React, { useEffect } from "react";
+import { AlertTitle, Modal, Paper, Tooltip, Typography } from "@mui/material";
+
 import GaugeChart from "react-gauge-chart";
 import "./Chart.css";
 import DownloadReportButton from "../DownloadCreditReport";
+import Accordion from "../Accordion/Accordion";
 
 const GuageChart = ({
   score,
@@ -11,12 +13,14 @@ const GuageChart = ({
   handleClose,
   error,
   userData,
+  activeToken,
 }: {
   score: number;
   showModal: boolean;
   handleClose: () => void;
   userData: any;
   error: string | null;
+  activeToken: string;
 }) => {
   const normalizedScore = (score - 300) / (900 - 300);
   useEffect(() => {
@@ -114,10 +118,14 @@ const GuageChart = ({
               <h1> {score}</h1>
 
               {score !== null && score > 580 && (
-                <DownloadReportButton userData={userData} score={score} />
+                <DownloadReportButton
+                  userData={userData}
+                  score={score}
+                  activeToken={activeToken}
+                />
               )}
               {score < 580 && (
-                <p style={{marginTop: "20px"}}>
+                <p style={{ marginTop: "20px" }}>
                   Sorry, your credit score is too low. Please contact us @{" "}
                   <a href="mailto:reports@rented123.com">
                     reports@rented123.com
@@ -149,6 +157,20 @@ const GuageChart = ({
             <Typography variant="body1" textAlign={"center"} color="red">
               {error}
             </Typography>
+            {error !== "Something unexpected happened. Please try again" && (
+              <Accordion
+                title="Why Didn't I Get a Credit Check Result ?"
+                content={
+                  <ul>
+                    <li>You might have entered some details incorrectly</li>
+                    <li>
+                      You might be new to the country and do not yet have a
+                      credit profile
+                    </li>
+                  </ul>
+                }
+              />
+            )}
             <Typography
               variant="body2"
               color="textSecondary"
