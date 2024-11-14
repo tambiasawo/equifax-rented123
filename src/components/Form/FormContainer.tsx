@@ -45,7 +45,7 @@ const MyForm = () => {
   const [clientError, setClientError] = useState<string | null>(null);
   const [serverError, setServerError] = useState<string | null>(null);
   const [userVerified, setUserVerified] = useState(false); //change to false
-
+  const [activeToken, setActiveToken] = useState("");
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
   const router = useRouter();
@@ -83,7 +83,10 @@ const MyForm = () => {
       if (!activeToken) {
         router.push("/404");
       } else if (activeToken[0].product !== "equifax") router.push("/404");
-      else setUserVerified(true);
+      else {
+        setActiveToken(activeToken[0]?.token);
+        setUserVerified(true);
+      }
     },
     [router]
   );
@@ -548,6 +551,7 @@ const MyForm = () => {
           showModal={showModal}
           handleClose={handleClose}
           error={clientError || serverError}
+          activeToken={activeToken}
         />
       </section>
     );
