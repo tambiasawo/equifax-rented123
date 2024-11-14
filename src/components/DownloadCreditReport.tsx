@@ -11,7 +11,8 @@ type UserData = {
 };
 export const generateCreditReportPDF = async (
   userData: UserData,
-  score: number
+  score: number,
+  activeToken: string
 ) => {
   const { first_name, last_name, address, dob } = userData;
   const pdf = new jsPDF();
@@ -77,8 +78,13 @@ export const generateCreditReportPDF = async (
     `Date Taken: ${new Date().toLocaleDateString()}`,
     130 + chartHeight + 10
   );
+  pdf.setProperties({
+    title: "Equifax Credit Check",
+    author: "Rented123",
+    keywords: activeToken,
+  });
   // Download PDF
-  pdf.save("Credit Report.pdf");
+  pdf.save("Rented123 Credit Report.pdf");
 
   //save pdf
   const pdfBlob = pdf.output("blob");
@@ -172,9 +178,11 @@ const saveToS3 = async (PDFfile: Blob, fileName: string) => {
 export default function DownloadReportButton({
   userData,
   score,
+  activeToken,
 }: {
   userData: UserData;
   score: number;
+  activeToken: string;
 }) {
   return (
     <div>
@@ -184,7 +192,7 @@ export default function DownloadReportButton({
         type="submit"
         variant="contained"
         color="primary"
-        onClick={() => generateCreditReportPDF(userData, score)}
+        onClick={() => generateCreditReportPDF(userData, score, activeToken)}
       >
         Download Credit Report
       </Button>
