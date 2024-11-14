@@ -26,3 +26,12 @@ svg > g .text-group::after {
   right: 24%; /* Adjust based on actual gauge size */
   top: 43%;
 }
+
+@media screen and (max-width: 640px) {
+  .title-score {
+    font-size: 20px;
+  }
+  .needle{
+    display: none;
+  }
+}
