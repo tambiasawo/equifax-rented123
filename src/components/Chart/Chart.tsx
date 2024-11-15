@@ -62,7 +62,7 @@ const GuageChart = ({
       aria-describedby="modal-modal-description"
     >
       <div>
-        {!error ? (
+        {!error && score !== null ? (
           <Paper
             id="gauge-chart-container"
             style={{
@@ -126,11 +126,9 @@ const GuageChart = ({
               )}
               {score < 580 && (
                 <p style={{ marginTop: "20px" }}>
-                  Sorry, your credit score is too low. Please contact us @{" "}
-                  <a href="mailto:reports@rented123.com">
-                    reports@rented123.com
-                  </a>{" "}
-                  to help improve your credit
+                  Sorry, your credit score is too low. Please{" "}
+                  <a href="mailto:reports@rented123.com">contact us </a> to help
+                  improve your credit
                 </p>
               )}
             </div>
@@ -153,13 +151,13 @@ const GuageChart = ({
               borderRadius: "5px",
             }}
           >
-            <AlertTitle>No Record Found</AlertTitle>
+            <AlertTitle sx={{color:''}}>No Record Found</AlertTitle>
             <Typography variant="body1" textAlign={"center"} color="red">
-              {error}
+              {error ||'Sorry, we could not find your credit profile'}
             </Typography>
             {error !== "Something unexpected happened. Please try again" && (
               <Accordion
-                title="Why Didn't I Get a Credit Check Result ?"
+                title="Why Am I Seeing this ?"
                 content={
                   <ul>
                     <li>You might have entered some details incorrectly</li>
