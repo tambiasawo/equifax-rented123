@@ -53,7 +53,6 @@ const GuageChart = ({
       addMark("900", "mark-max"); // Max mark
     }
   }, []);
-
   return (
     <Modal
       open={showModal}
@@ -117,20 +116,11 @@ const GuageChart = ({
               <span className="title-score">Your Credit Score</span>
               <h1> {score}</h1>
 
-              {score !== null && score > 580 && (
-                <DownloadReportButton
-                  userData={userData}
-                  score={score}
-                  activeToken={activeToken}
-                />
-              )}
-              {score < 580 && (
-                <p style={{ marginTop: "20px" }}>
-                  Sorry, your credit score is too low. Please{" "}
-                  <a href="mailto:reports@rented123.com">contact us </a> to help
-                  improve your credit
-                </p>
-              )}
+              <DownloadReportButton
+                userData={userData}
+                score={score}
+                activeToken={activeToken}
+              />
             </div>
           </Paper>
         ) : (
@@ -151,9 +141,9 @@ const GuageChart = ({
               borderRadius: "5px",
             }}
           >
-            <AlertTitle sx={{color:''}}>No Record Found</AlertTitle>
-            <Typography variant="body1" textAlign={"center"} color="red">
-              {error ||'Sorry, we could not find your credit profile'}
+            <AlertTitle sx={{ color: "red" }}>No Record Found</AlertTitle>
+            <Typography variant="body1" textAlign={"center"} color="black">
+              {error || "Sorry, we could not find your credit profile"}
             </Typography>
             {error !== "Something unexpected happened. Please try again" && (
               <Accordion
@@ -161,6 +151,10 @@ const GuageChart = ({
                 content={
                   <ul>
                     <li>You might have entered some details incorrectly</li>
+                    <li>
+                      You might not have enough credit information to have a
+                      credit profile
+                    </li>
                     <li>
                       You might be new to the country and do not yet have a
                       credit profile

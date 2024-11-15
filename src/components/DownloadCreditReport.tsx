@@ -49,6 +49,9 @@ export const generateCreditReportPDF = async (
   pdf.text(`Address: ${address}`, 20, 95);
   pdf.text(``, 20, 100); // Extra line
   pdf.text(`Date of Birth: ${dob}`, 20, 110);
+  pdf.setFont("Helvetica", "bold");
+  pdf.text(`Credit Score: ${score}`, 20, 125);
+  pdf.setFont("Helvetica", "normal");
 
   // Capture GaugeChart and add it to the PDF
   const chartElement = document.getElementById("gauge-chart2") as HTMLElement;
@@ -81,7 +84,7 @@ export const generateCreditReportPDF = async (
   pdf.setProperties({
     title: "Equifax Credit Check",
     author: "Rented123",
-    keywords: activeToken,
+    keywords: `${activeToken} ${score}`,
   });
   // Download PDF
   pdf.save("Rented123 Credit Report.pdf");
