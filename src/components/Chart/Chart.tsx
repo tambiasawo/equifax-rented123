@@ -117,8 +117,7 @@ const GuageChart = ({
               <h1> {score}</h1>
 
               <DownloadReportButton
-                userData={userData}
-                score={score}
+                userData={{ ...userData, score }}
                 activeToken={activeToken}
               />
             </div>

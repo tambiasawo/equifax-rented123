@@ -8,10 +8,20 @@ type UserData = {
   last_name: string;
   dob: string;
   address: string;
+  score: number;
 };
-export const generateCreditReportPDF = async (
+
+const emailPDF = async (userDetails: UserData, goodCreditStanding: boolean) => {
+  const request = await fetch("/api/send-email/", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ userDetails, goodCreditStanding }),
+  });
+  const response = await request.json();
+};
+
+const generateCreditReportPDF = async (
   userData: UserData,
-  score: number,
   activeToken: string
 ) => {
   const { first_name, last_name, address, dob } = userData;
@@ -50,7 +60,7 @@ export const generateCreditReportPDF = async (
   pdf.text(``, 20, 100); // Extra line
   pdf.text(`Date of Birth: ${dob}`, 20, 110);
   pdf.setFont("Helvetica", "bold");
-  pdf.text(`Credit Score: ${score}`, 20, 125);
+  pdf.text(`Credit Score: ${userData.score}`, 20, 125);
   pdf.setFont("Helvetica", "normal");
 
   // Capture GaugeChart and add it to the PDF
@@ -84,14 +94,14 @@ export const generateCreditReportPDF = async (
   pdf.setProperties({
     title: "Equifax Credit Check",
     author: "Rented123",
-    keywords: `${activeToken} ${score}`,
+    keywords: `${activeToken} ${userData.score}`,
   });
   // Download PDF
   pdf.save("Rented123 Credit Report.pdf");
 
   //save pdf
   const pdfBlob = pdf.output("blob");
-  const goodCreditStanding = score > 580; //580 is minimum score
+  const goodCreditStanding = userData.score > 580; //580 is minimum score
   await saves3LinkInWordPress(
     pdfBlob,
     goodCreditStanding,
@@ -99,6 +109,8 @@ export const generateCreditReportPDF = async (
     last_name,
     dob
   );
+
+  emailPDF(userData, goodCreditStanding);
 };
 
 export const saves3LinkInWordPress = async (
@@ -180,11 +192,9 @@ const saveToS3 = async (PDFfile: Blob, fileName: string) => {
 
 export default function DownloadReportButton({
   userData,
-  score,
   activeToken,
 }: {
   userData: UserData;
-  score: number;
   activeToken: string;
 }) {
   return (
@@ -195,7 +205,7 @@ export default function DownloadReportButton({
         type="submit"
         variant="contained"
         color="primary"
-        onClick={() => generateCreditReportPDF(userData, score, activeToken)}
+        onClick={() => generateCreditReportPDF(userData, activeToken)}
       >
         Download Credit Report
       </Button>
