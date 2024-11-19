@@ -499,6 +499,7 @@ const MyForm = () => {
                   blurHandler={handleBlur}
                 />
               )}
+
               <Field name="privacy_agreement">
                 {({
                   field,
@@ -520,13 +521,25 @@ const MyForm = () => {
                       />
                     }
                     label={
-                      <span>
-                        By checking this box, you agree to us performing a
-                        credit check on you and to our{" "}
-                        <a href="https://rented123.com/privacy-policy/">
-                          privacy policy
-                        </a>
-                      </span>
+                      <>
+                        <span>
+                          By checking this box, you agree to us performing a
+                          credit check on you and to our{" "}
+                          <a
+                            href="https://dev.rented123.com/wp-content/uploads/2024/11/Rented123.com-privacy-and-data-collection-consent.docx.pdf"
+                            target="_blank"
+                          >
+                            privacy policy
+                          </a>{" "}
+                          and the{" "}
+                          <a
+                            href="https://dev.rented123.com/wp-content/uploads/2024/11/BC-Real-Estate-Privacy-Consent.pdf"
+                            target="_blank"
+                          >
+                            BC Real Estate privacy policy
+                          </a>
+                        </span>
+                      </>
                     }
                   />
                 )}
