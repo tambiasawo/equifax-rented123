@@ -12,6 +12,10 @@
 .submit-button {
   margin: 20px auto 0 !important;
   width: 50%;
+  background-color: #32429b !important;
+}
+.submit-button:hover {
+  opacity: 0.85;
 }
 
 @media screen and (max-width: 640px) {
