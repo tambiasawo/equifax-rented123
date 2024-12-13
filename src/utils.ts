@@ -1,6 +1,47 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { getToken } from "./actions";
+
+export const verifyTokenFn = async (
+  token: string | null,
+  productToVerify: string
+) => {
+  const activeToken = await getToken(token as string);
+  if (!activeToken) return false;
+  if (activeToken[0].product === productToVerify) return true;
+
+  return false;
+};
+
+export const retrieveInfo = (xmlElement: HTMLCollection, ...args: string[]) => {
+  const tempObj: Record<string, any> = {};
+  const retrievedInfo = Array.from(xmlElement[0].children).reduce(
+    (acc, curr) => {
+      args.map((arg) => {
+        if (arg.includes(">")) {
+          const splitArgs = arg.split(">");
+          const element = curr
+            .querySelector(splitArgs[0])
+            ?.getAttribute(splitArgs[1]) as string;
+          tempObj[splitArgs.join("_")] = element;
+        } else if (arg.includes("-")) {
+          const splitArgs = arg.split("-");
+          const element = curr.getAttribute(splitArgs[1]) as string;
+          tempObj[splitArgs.join("_")] = element;
+        } else {
+          const element = curr.querySelector(arg)?.textContent as string;
+          tempObj[arg] = element;
+        }
+      });
+      acc.push(tempObj);
+
+      return acc;
+    },
+    []
+  );
+  return retrievedInfo;
+};
 
 const useIsMobile = () => {
   const [isMobile, setIsMobile] = useState(false);
