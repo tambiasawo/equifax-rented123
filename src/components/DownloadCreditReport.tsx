@@ -133,7 +133,8 @@ const generateCreditReportPDF = async (
       retrievedEmployments.forEach((employer, index) => {
         checkPageEnd();
         pdf.text(`Employer: ${employer}`, 10, posY);
-        index === retrievedEmployments.length - 1 ? (posY += 10) : (posY += 5);
+        if (index === retrievedEmployments.length - 1) posY += 10;
+        else posY += 5;
         checkPageEnd();
       });
     } else {
