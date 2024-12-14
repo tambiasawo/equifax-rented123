@@ -10,7 +10,7 @@ const page = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
-  const [userIsVerified, setIsUserVerified] = React.useState(true);
+  const [userIsVerified, setIsUserVerified] = React.useState(false);
 
   const fn = async () => {
     const isVerified = await verifyTokenFn(token, "full-credit-report"); //full-credit-report
@@ -22,7 +22,7 @@ const page = () => {
   };
 
   React.useEffect(() => {
-   // fn();
+    fn();
   }, [fn]);
 
   return (
