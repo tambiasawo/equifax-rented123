@@ -24,7 +24,30 @@ const GuageChart = ({
 }) => {
   const normalizedScore = (score - 300) / (900 - 300);
   useEffect(() => {
-    const chartContainer = document.getElementById("gauge-chart-container");
+    const addNumbersToArcs = () => {
+      console.log("stuff");
+      // Select all the `g.arc` elements
+      const arc = document.querySelector("g.arc>path");
+      //const path = arcGroup?.querySelector("path");
+      // Loop through each arc and insert a number
+      // Check if the text already exists to avoid duplicates
+      console.log({ arc });
+      if (arc) {
+        const text = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "0"
+        );
+        text.setAttribute("x", "0"); // Adjust x position
+        text.setAttribute("y", "-10"); // Adjust y position
+        text.setAttribute("fill", "black");
+        text.setAttribute("font-size", "16");
+        text.setAttribute("text-anchor", "middle");
+
+        // Insert the text element before the path
+        arc.insertBefore(text, arc.firstChild);
+      }
+    };
+    /*  const chartContainer = document.getElementById("gauge-chart-container");
 
     if (chartContainer) {
       // Clear existing marks if any (to avoid duplicates)
@@ -51,7 +74,8 @@ const GuageChart = ({
       addMark("300", "mark-min"); // Min mark
       addMark("580", "mark-mid"); // Mid mark
       addMark("900", "mark-max"); // Max mark
-    }
+    } */
+    addNumbersToArcs();
   }, []);
   return (
     <Modal
