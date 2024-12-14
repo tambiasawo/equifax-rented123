@@ -7,29 +7,34 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { verifyTokenFn } from "@/utils";
 import React from "react";
 
-const App = () => {
+const AppContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
 
-  const fn = async () => {
-    const verify = await verifyTokenFn(token, "equifax");
-    if (!verify) {
-      router.push("/404");
-    }
-  };
-
   React.useEffect(() => {
+    const fn = async () => {
+      const verify = await verifyTokenFn(token, "equifax");
+      if (!verify) {
+        router.push("/404");
+      }
+    };
     fn();
-  }, []);
+  }, [token, router]);
 
   return (
     <div className="app">
       <Divider />
-      <Suspense>
-        <Form />
-      </Suspense>
+      <Form />
     </div>
+  );
+};
+
+const App = () => {
+  return (
+    <Suspense>
+      <AppContent />
+    </Suspense>
   );
 };
 
