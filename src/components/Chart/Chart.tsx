@@ -25,7 +25,7 @@ const GuageChart = ({
   const normalizedScore = (score - 300) / (900 - 300);
   useEffect(() => {
     const addNumbersToArcs = () => {
-      console.log("stuff");
+      //console.log("stuff");
       // Select all the `g.arc` elements
       const arc = document.querySelector("g.arc>path");
       //const path = arcGroup?.querySelector("path");
