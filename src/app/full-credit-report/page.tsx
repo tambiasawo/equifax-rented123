@@ -21,7 +21,7 @@ const Page = () => {
       }
       setIsUserVerified(isVerified);
     };
-    //fn();
+    fn();
   }, [token, router]);
 
   return (
