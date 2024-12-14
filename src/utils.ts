@@ -14,16 +14,176 @@ export const verifyTokenFn = async (
   return false;
 };
 
+export const getData = (xmlResult: Document) => {
+  const lastName = xmlResult.getElementsByTagNameNS(
+    "http://www.equifax.ca/XMLSchemas/EfxToCust",
+    "LastName"
+  )[0].textContent;
+  const firstName = xmlResult.getElementsByTagNameNS(
+    "http://www.equifax.ca/XMLSchemas/EfxToCust",
+    "FirstName"
+  )[0].textContent;
+  const dateOfBirth = xmlResult.getElementsByTagNameNS(
+    "http://www.equifax.ca/XMLSchemas/EfxToCust",
+    "DateOfBirth"
+  )[0].textContent;
+
+  const CNEmployments = xmlResult.getElementsByTagNameNS(
+    "http://www.equifax.ca/XMLSchemas/EfxToCust",
+    "Employer"
+  );
+  const CNBankruptciesOrActs = xmlResult.getElementsByTagNameNS(
+    "http://www.equifax.ca/XMLSchemas/EfxToCust",
+    "CNBankruptciesOrActs"
+  );
+  const CNCollections = xmlResult.getElementsByTagNameNS(
+    "http://www.equifax.ca/XMLSchemas/EfxToCust",
+    "CNCollections"
+  );
+  const CNLegalItems = xmlResult.getElementsByTagNameNS(
+    "http://www.equifax.ca/XMLSchemas/EfxToCust",
+    "CNLegalItems"
+  );
+  const CNSecuredLoans = xmlResult.getElementsByTagNameNS(
+    "http://www.equifax.ca/XMLSchemas/EfxToCust",
+    "CNSecuredLoans"
+  );
+  const CNTrades = xmlResult.getElementsByTagNameNS(
+    "http://www.equifax.ca/XMLSchemas/EfxToCust",
+    "CNTrades"
+  );
+  const CNLocalInquiries = xmlResult.getElementsByTagNameNS(
+    "http://www.equifax.ca/XMLSchemas/EfxToCust",
+    "CNLocalInquiries"
+  );
+  const CNAddresses = xmlResult.getElementsByTagNameNS(
+    "http://www.equifax.ca/XMLSchemas/EfxToCust",
+    "CNAddresses"
+  );
+  let retrievedAddresses,
+    retrievedEmployments,
+    retrievedBankruptcies,
+    retrievedLoans,
+    retrievedTrades,
+    retrievedLocalInquiries,
+    retrievedCollections,
+    retrievedLegalItems;
+  if (CNAddresses && CNAddresses[0].children.length) {
+    retrievedAddresses = retrieveInfo(
+      CNAddresses,
+      "DateReported",
+      "CivicNumber",
+      "StreetName",
+      "City",
+      "Province>code",
+      "PostalCode"
+    );
+  }
+  if (CNEmployments.length) {
+    retrievedEmployments = Array.from(CNEmployments).map(
+      (employment) => employment.textContent
+    );
+  }
+  if (CNBankruptciesOrActs && CNBankruptciesOrActs[0]?.children.length) {
+    retrievedBankruptcies = retrieveInfo(
+      CNBankruptciesOrActs,
+      "DateFiled",
+      "CaseNumberAndTrustee",
+      "Type>description",
+      "IntentOrDisposition>description",
+      "LiabilityAmount",
+      "AssetAmount"
+    );
+  }
+  if (CNLocalInquiries && CNLocalInquiries[0]?.children.length) {
+    retrievedLocalInquiries = retrieveInfo(
+      CNLocalInquiries,
+      "CNLocalInquiry-date",
+      "CustomerNumber",
+      "Name",
+      "AreaCode",
+      "Number"
+    );
+  }
+  if (CNCollections && CNCollections[0]?.children.length) {
+    retrievedCollections = retrieveInfo(
+      CNCollections,
+      "CNCollection-description",
+      "CustomerNumber",
+      "Name",
+      "AssignedDate",
+      "AccountNumberAndOrName",
+      "Reason>description",
+      "BalanceAmount",
+      "OriginalAmount",
+      "DateOfLastPayment"
+    );
+  }
+  if (CNSecuredLoans && CNSecuredLoans[0]?.children.length) {
+    retrievedLoans = retrieveInfo(
+      CNSecuredLoans,
+      "DateFiled",
+      "CustomerNumber",
+      "Name",
+      "NameAddressAndAmount",
+      "Industry>description",
+      "MaturityDate"
+    );
+  }
+  if (CNLegalItems && CNLegalItems[0]?.children.length) {
+    retrievedLegalItems = retrieveInfo(
+      CNLegalItems,
+      "CNLegalItem-description",
+      "DateFiled",
+      "Amount",
+      "Defendant",
+      "Plaintiff",
+      "LawyerNameAddress"
+    );
+  }
+  if (CNTrades && CNTrades[0]?.children.length) {
+    retrievedTrades = retrieveInfo(
+      CNTrades,
+      "DateReported",
+      "HighCreditAmount",
+      "PaymentTermAmount",
+      "BalanceAmount",
+      "PastDueAmount",
+      "MonthsReviewed",
+      "DateOpened",
+      "DateLastActivityOrPayment",
+      "PortfolioType>description",
+      "PaymentRate>description"
+    );
+  }
+
+  return {
+    lastName,
+    firstName,
+    dateOfBirth,
+    retrievedBankruptcies,
+    retrievedLocalInquiries,
+    retrievedTrades,
+    retrievedLoans,
+    retrievedCollections,
+    retrievedLegalItems,
+    retrievedAddresses,
+    retrievedEmployments,
+  };
+};
+
 export const retrieveInfo = (xmlElement: HTMLCollection, ...args: string[]) => {
-  const tempObj: Record<string, any> = {};
   const retrievedInfo = Array.from(xmlElement[0].children).reduce(
-    (acc, curr) => {
+    (acc:Array<any>, curr) => {
+      const tempObj: Record<string, any> = {};
+
       args.map((arg) => {
         if (arg.includes(">")) {
           const splitArgs = arg.split(">");
           const element = curr
             .querySelector(splitArgs[0])
             ?.getAttribute(splitArgs[1]) as string;
+
           tempObj[splitArgs.join("_")] = element;
         } else if (arg.includes("-")) {
           const splitArgs = arg.split("-");
