@@ -1,9 +1,11 @@
 .form-container {
   width: 80%;
-  margin: 20px auto;
+  margin: 10px auto 0px;
   display: flex;
   flex-direction: column;
   row-gap: 10px;
+  overflow-y: auto !important;
+  max-height: 550px;
 }
 .subtitle {
   margin-bottom: -10px;
