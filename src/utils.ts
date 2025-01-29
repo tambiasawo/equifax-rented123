@@ -9,7 +9,7 @@ export const verifyTokenFn = async (
 ) => {
   const activeToken = await getToken(token as string);
   if (!activeToken) return false;
-  if (activeToken[0].product === productToVerify) return true;
+  if (activeToken.product === productToVerify) return true;
 
   return false;
 };
