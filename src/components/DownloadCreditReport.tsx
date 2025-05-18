@@ -446,15 +446,6 @@ const generateCreditReportPDF = async (
     pdf.text(`Credit Score: ${userData.score}`, 20, 125);
     pdf.setFont("Helvetica", "normal");
 
-    // Capture GaugeChart and add it to the PDF
-    const chartElement = document.getElementById("gauge-chart2") as HTMLElement;
-   /*  const chartImage = await html2canvas(chartElement).then((canvas) =>
-      canvas.toDataURL("image/png")
-    ); */
-
-    // Dynamically adjust the chart size based on page width
-    const chartWidth = Math.min(pageWidth - 40, 150);
-    
     pdf.setProperties({
       title: xmlResult ? "Full Credit Report" : "Basic Credit Report",
       author: "Rented123",
