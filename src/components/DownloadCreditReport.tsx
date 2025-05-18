@@ -448,22 +448,24 @@ const generateCreditReportPDF = async (
 
     // Capture GaugeChart and add it to the PDF
     const chartElement = document.getElementById("gauge-chart2") as HTMLElement;
-    const chartImage = await html2canvas(chartElement).then((canvas) =>
+   /*  const chartImage = await html2canvas(chartElement).then((canvas) =>
       canvas.toDataURL("image/png")
-    );
+    ); */
 
     // Dynamically adjust the chart size based on page width
     const chartWidth = Math.min(pageWidth - 40, 150);
-    const chartHeight = chartWidth / 2.5; // Adjust proportionally for the gauge
+    
+    pdf.setProperties({
+      title: xmlResult ? "Full Credit Report" : "Basic Credit Report",
+      author: "Rented123",
+      keywords: `${activeToken} ${last_name} ${score}`,
+    });
 
     // Download PDF
-    pdf.save("Rented123 Basic Credit Report.pdf");
+    pdf.save(xmlResult ? "Full Credit Report" : "Basic Credit Report");
     pdfBlob = pdf.output("blob");
   }
-  pdf.setProperties({
-    title: xmlResult ? "Full Credit Report" : "Basic Credit Report",
-    keywords: `${activeToken} ${last_name} ${score}`,
-  });
+
   //save pdf
   const goodCreditStanding = userData.score > 580; //580 is minimum score
   await saves3LinkInWordPress(
