@@ -449,7 +449,7 @@ const generateCreditReportPDF = async (
     pdf.setProperties({
       title: xmlResult ? "Full Credit Report" : "Basic Credit Report",
       author: "Rented123",
-      keywords: `${activeToken} ${last_name} ${score}`,
+      keywords: `${last_name} ${score}`,
     });
 
     // Download PDF
