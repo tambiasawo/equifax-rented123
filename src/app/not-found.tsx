@@ -3,11 +3,11 @@ import Link from "next/link";
 
 export default function NotFound() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-[80vh] bg-gray-50 px-4">
-      <div className="max-w-md text-center">
+    <div className="not-found-container">
+      <div className="not-found-content">
         {/* Illustration (optional) */}
         <svg
-          className="mx-auto mb-6 w-32 h-32 text-gray-300"
+          className="not-found-illustration"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 64 64"
@@ -18,16 +18,14 @@ export default function NotFound() {
           <line x1="44" y1="20" x2="20" y2="44" strokeWidth="4" />
         </svg>
 
-        <h1 className="text-4xl font-extrabold text-gray-800 mb-2">
-          404: Page Not Found
-        </h1>
-        <p className="text-gray-600 mb-6">
+        <h1 className="not-found-title">404: Page Not Found</h1>
+        <p className="not-found-text">
           Oops! It seems like your token has expired.
         </p>
         <Link
           href="https://rented123.com/product/credit-check/"
           target="_blank"
-          className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition"
+          className="btn-primary"
         >
           Get a New One
         </Link>

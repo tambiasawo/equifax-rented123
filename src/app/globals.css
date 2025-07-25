@@ -1,4 +1,58 @@
 body {
   margin: 0;
-  overflow-y: hidden; 
+  overflow-y: hidden;
+}
+
+/* not-found.css */
+.not-found-container {
+  display: flex;
+  margin-top: 50px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-left: 1rem; /* px-4 */
+  padding-right: 1rem;
+}
+
+.not-found-content {
+  max-width: 28rem; /* max-w-md */
+  text-align: center;
+  font-family: "Helvetica", Times;
+}
+
+.not-found-illustration {
+  display: block;
+  margin-left: auto; /* mx-auto */
+  margin-right: auto;
+  margin-bottom: 1.5rem; /* mb-6 */
+  width: 8rem; /* w-32 */
+  height: 8rem; /* h-32 */
+  color: #d1d5db; /* text-gray-300 */
+}
+
+.not-found-title {
+  font-size: 2.25rem; /* text-4xl */
+  font-weight: 800; /* font-extrabold */
+  color: #1f2937; /* text-gray-800 */
+  margin-bottom: 0.5rem; /* mb-2 */
+}
+
+.not-found-text {
+  color: #4b5563; /* text-gray-600 */
+  margin-bottom: 1.5rem; /* mb-6 */
+}
+
+.btn-primary {
+  display: inline-block;
+  background-color: #2563eb; /* bg-blue-600 */
+  color: white;
+  font-weight: 500; /* font-medium */
+  padding: 0.5rem 1rem; /* py-2 px-4 */
+  border-radius: 0.5rem; /* rounded-lg */
+  text-decoration: none;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.btn-primary:hover {
+  background-color: #1d4ed8; /* hover:bg-blue-700 */
 }
