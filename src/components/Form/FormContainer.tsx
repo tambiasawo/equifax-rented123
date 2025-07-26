@@ -215,7 +215,6 @@ const MyForm = ({ showFullReport }: { showFullReport?: boolean }) => {
               "application/xml"
             );
             if (showFullReport) {
-              console.log(xmlDoc);
               changeXMLResult(xmlDoc);
             }
             const scoreNode = xmlDoc.getElementsByTagNameNS(
@@ -250,10 +249,6 @@ const MyForm = ({ showFullReport }: { showFullReport?: boolean }) => {
                 "Sorry we could not find a credit your profile. Please ensure all details are correct"
               );
             } else {
-              console.log(
-                Number(scoreNode.textContent?.substring(2) as string)
-              );
-
               setScoreNumber(
                 Number(scoreNode.textContent?.substring(2) as string)
               );
