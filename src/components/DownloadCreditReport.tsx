@@ -1,5 +1,4 @@
 import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
 import { getData, logoImage } from "@/utils";
 import { Button } from "@mui/material";
 import { useResultCtx } from "@/app/context/resultContext";
@@ -24,450 +23,363 @@ const emailPDF = async (userDetails: UserData, goodCreditStanding: boolean) => {
 const generateCreditReportPDF = async (
   userData: UserData,
   activeToken: string,
-  xmlResult: Document
+  xmlResult?: Document
 ) => {
+  // Dynamic import for jsPDF to avoid SSR issues
+  const { jsPDF } = await import("jspdf");
+
   const { first_name, last_name, address, dob, score } = userData;
   const pdf = new jsPDF();
-  let pdfBlob;
   const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
 
-  // Center alignment function
+  // Color palette
+  const colors = {
+    primary: "#1e40af",
+    secondary: "#0d9488",
+    accent: "#d97706",
+    success: "#16a34a",
+    warning: "#d97706",
+    error: "#dc2626",
+    gray: {
+      100: "#f3f4f6",
+      300: "#d1d5db",
+      600: "#4b5563",
+      800: "#1f2937",
+    },
+    equifax: "#a32639",
+  };
+
+  // Helper functions
+  const hexToRgb = (hex: string) => {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result
+      ? {
+          r: parseInt(result[1], 16),
+          g: parseInt(result[2], 16),
+          b: parseInt(result[3], 16),
+        }
+      : null;
+  };
+
+  const setFillColor = (color: string) => {
+    const rgb = hexToRgb(color);
+    if (rgb) pdf.setFillColor(rgb.r, rgb.g, rgb.b);
+  };
+
+  const setTextColor = (color: string) => {
+    const rgb = hexToRgb(color);
+    if (rgb) pdf.setTextColor(rgb.r, rgb.g, rgb.b);
+  };
+
   const centerText = (text: string, y: number) => {
     const textWidth = pdf.getTextWidth(text);
     pdf.text(text, (pageWidth - textWidth) / 2, y);
   };
-  //Image
-  pdf.addImage(logoImage, "PNG", 10, 9, 23, 30);
 
-  // Title
-  pdf.setFontSize(14);
-  pdf.setFont("helvetica", "bold");
-  pdf.text(`${xmlResult ? "Full" : "Basic"} Credit Report`, 80, 50);
+  const drawCard = (
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    fillColor?: string
+  ) => {
+    pdf.setDrawColor(230, 230, 230);
+    pdf.setLineWidth(0.5);
 
-  // Add Date Pulled and Name/ID Details
-  pdf.setFontSize(10);
-  pdf.text(`Date Pulled: ${new Date().toLocaleDateString()}`, 150, 12);
-  pdf.text(`Name: ${last_name}, ${first_name} `, 150, 17);
-  pdf.text(`DOB: ${dob}`, 150, 22);
-  pdf.setFont("Helvetica", "bold");
-  pdf.setTextColor("#a32639"); // Red color
-  const poweredByText = "Powered by Equifax";
-  pdf.text(poweredByText, 150, 27);
-  pdf.setTextColor("#000"); // Red color
-  pdf.setFont("Helvetica", "bold");
-
-  if (xmlResult) {
-    const {
-      lastName,
-      firstName,
-      dateOfBirth,
-      retrievedBankruptcies,
-      retrievedLocalInquiries,
-      retrievedTrades,
-      retrievedLoans,
-      retrievedCollections,
-      retrievedLegalItems,
-      retrievedAddresses,
-      retrievedEmployments,
-    } = getData(xmlResult);
-
-    // Section: Response From Equifax
-    pdf.setFont("helvetica", "bold");
-    pdf.text("Personal Information", 10, 65);
-    pdf.setFont("helvetica", "normal");
-    pdf.text(`Full Name: ${lastName}, ${firstName}`, 10, 70);
-    pdf.text(`Date of Birth: ${dateOfBirth}`, 10, 75);
-
-    // Section: Consumer Information
-    pdf.setFont("helvetica", "bold");
-    pdf.text("Consumer Information", 10, 90);
-    pdf.setFont("helvetica", "normal");
-    pdf.text(`Credit Score: `, 10, 95);
-    pdf.setFont("helvetica", "bold");
-    pdf.text(`${score}`, 32, 95);
-    pdf.setFont("helvetica", "normal");
-
-    let posY = 105;
-    const pageHeight = 265;
-    const checkPageEnd = () => {
-      if (posY > pageHeight) {
-        pdf.addPage();
-        posY = 20; // Reset position for new page
-      }
-    };
-    posY += 5;
-    pdf.setFont("helvetica", "bold");
-    pdf.text("Addresses", 10, posY);
-    pdf.setFont("helvetica", "normal");
-    posY += 5;
-    if (retrievedAddresses) {
-      retrievedAddresses.forEach((address, index) => {
-        checkPageEnd();
-        const addressText = `${address.CivicNumber} ${address.StreetName}, ${address.City}, ${address.Province_code}, ${address.PostalCode}`;
-        if (index === 0) {
-          pdf.text(`Current Address: ${addressText}`, 10, posY);
-          posY += 5;
-          pdf.text(`Date Reported: ${address.DateReported}`, 10, posY);
-          checkPageEnd();
-        } else {
-          pdf.text(`Previous Address ${index}: ${addressText}`, 10, posY);
-          posY += 5;
-          pdf.text(`Date Reported Address: ${address.DateReported}`, 10, posY);
-          checkPageEnd();
-        }
-        posY += 10;
-      });
+    if (fillColor) {
+      setFillColor(fillColor);
+      pdf.roundedRect(x, y, width, height, 3, 3, "FD");
     } else {
-      pdf.text(`No Record of Addresses`, 10, posY);
-      posY += 10;
-      checkPageEnd();
+      pdf.roundedRect(x, y, width, height, 3, 3, "S");
     }
 
-    // Employment Info
-    posY += 5;
+    // Add subtle shadow effect
+    pdf.setDrawColor(200, 200, 200);
+    pdf.setLineWidth(0.2);
+    pdf.roundedRect(x + 0.5, y + 0.5, width, height, 3, 3, "S");
+  };
+
+  const getScoreColor = (score: number) => {
+    if (score >= 800) return colors.success;
+    if (score >= 740) return colors.secondary;
+    if (score >= 670) return colors.warning;
+    if (score >= 580) return colors.accent;
+    return colors.error;
+  };
+
+  const getScoreRating = (score: number) => {
+    if (score >= 800) return "Excellent";
+    if (score >= 740) return "Very Good";
+    if (score >= 670) return "Good";
+    if (score >= 580) return "Fair";
+    return "Poor";
+  };
+
+  // Header section
+  const drawHeader = () => {
+    // Background header bar
+    setFillColor(colors.gray[100]);
+    pdf.rect(0, 0, pageWidth, 45, "F");
+
+    // Logo placeholder (you can replace with actual logo)
+    pdf.setFontSize(20);
     pdf.setFont("helvetica", "bold");
-    pdf.text("Employments", 10, posY);
-    pdf.setFont("helvetica", "normal");
-    posY += 5;
-    if (retrievedEmployments) {
-      retrievedEmployments.forEach((employer, index) => {
-        checkPageEnd();
-        pdf.text(`Employer: ${employer}`, 10, posY);
-        if (index === retrievedEmployments.length - 1) posY += 10;
-        else posY += 5;
-        checkPageEnd();
-      });
-    } else {
-      pdf.text(`No Record of Bankruptcy`, 10, posY);
-      posY += 10;
-      checkPageEnd();
-    }
+    setTextColor(colors.primary);
+    //pdf.text('Rented123', 20, 25);
+    pdf.addImage(logoImage, "PNG", 10, 6, 23, 30);
 
-    // Section: Recent Bankruptcy
-    posY += 5;
+    // Report title
+    pdf.setFontSize(16);
     pdf.setFont("helvetica", "bold");
-    pdf.text("Bankruptcies", 10, posY);
+    pdf.text(
+      `${xmlResult ? "Comprehensive" : ""} Credit Report`,
+      pageWidth - 20,
+      20,
+      { align: "right" }
+    );
+
+    // Date and powered by
+    pdf.setFontSize(10);
     pdf.setFont("helvetica", "normal");
-    posY += 5;
-    if (retrievedBankruptcies) {
-      retrievedBankruptcies.forEach((bankruptcy) => {
-        checkPageEnd();
-
-        pdf.text(`Date Filed: ${bankruptcy.DateFiled}`, 10, posY);
-        posY += 5;
-        pdf.text(`Type: ${bankruptcy.Type_description}`, 10, posY);
-        posY += 5;
-        pdf.text(
-          `Case Number and Trustee: ${bankruptcy.CaseNumberAndTrustee}`,
-          10,
-          posY
-        );
-        posY += 5;
-        pdf.text(
-          `Intent: ${bankruptcy.IntentOrDisposition_description}`,
-          10,
-          posY
-        );
-        posY += 5;
-        pdf.text(
-          `Liability Amount: ${
-            +bankruptcy.LiabilityAmount
-              ? "$" + Number(bankruptcy.LiabilityAmount)
-              : "N/A"
-          }`,
-          10,
-          posY
-        );
-        posY += 5;
-        pdf.text(
-          `Asset Amount: ${
-            +bankruptcy.AssetAmount
-              ? "$" + Number(bankruptcy.AssetAmount)
-              : "N/A"
-          }`,
-          10,
-          posY
-        );
-        posY += 10;
-        checkPageEnd();
-      });
-    } else {
-      pdf.text(`No Record of Bankruptcy`, 10, posY);
-      posY += 10;
-      checkPageEnd();
-    }
-    posY += 5;
-    pdf.setFont("helvetica", "bold");
-    pdf.text("Collections", 10, posY);
-    pdf.setFont("helvetica", "normal");
-    posY += 5;
-    if (retrievedCollections) {
-      retrievedCollections.forEach((collection) => {
-        checkPageEnd();
-        pdf.text(`Assigned Date: ${collection.AssignedDate}`, 10, posY);
-        posY += 5;
-        pdf.text(`Customer Number: ${collection.CustomerNumber}`, 10, posY);
-        posY += 5;
-        pdf.text(`Name: ${collection.Name}`, 10, posY);
-        posY += 5;
-        pdf.text(
-          `Creditor Account Number and Name: ${collection.AccountNumberAndOrName}`,
-          10,
-          posY
-        );
-        posY += 5;
-        pdf.text(
-          `OriginalAmount: ${Number(collection.OriginalAmount) ?? "N/A"}`,
-          10,
-          posY
-        );
-        posY += 5;
-        pdf.text(
-          `Balance Amount: ${
-            collection.BalanceAmount || collection.OriginalAmount === 0
-              ? "$" + Number(collection.BalanceAmount)
-              : "N/A"
-          }`,
-          10,
-          posY
-        );
-        posY += 5;
-        pdf.text(
-          `Date of Last Payment: ${collection.DateOfLastPayment}`,
-          10,
-          posY
-        );
-
-        posY += 10;
-        checkPageEnd();
-      });
-    } else {
-      pdf.text(`No Record of Collections`, 10, posY);
-      posY += 10;
-      checkPageEnd();
-    }
-    posY += 5;
-    pdf.setFont("helvetica", "bold");
-    pdf.text("Local Inquiries", 10, posY);
-    pdf.setFont("helvetica", "normal");
-    posY += 5;
-    if (retrievedLocalInquiries) {
-      retrievedLocalInquiries.forEach((inquiry) => {
-        checkPageEnd();
-        pdf.text(`Date Filed: ${inquiry.CNLocalInquiry_date}`, 10, posY);
-        posY += 5;
-        pdf.text(`Customer Number: ${inquiry.CustomerNumber}`, 10, posY);
-        posY += 5;
-        pdf.text(`Name: ${inquiry.Name}`, 10, posY);
-        posY += 5;
-        pdf.text(
-          `Phone Number: ${
-            inquiry.AreaCode && inquiry.Number
-              ? "(" + inquiry.AreaCode + ") " + inquiry.Number
-              : "N/A"
-          }`,
-          10,
-          posY
-        );
-        posY += 10;
-        checkPageEnd();
-      });
-    } else {
-      pdf.text(`No Record of Local Inquiries`, 10, posY);
-      posY += 10;
-      checkPageEnd();
-    }
-    posY += 5;
-    pdf.setFont("helvetica", "bold");
-    pdf.text("Secured Loans", 10, posY);
-    pdf.setFont("helvetica", "normal");
-    posY += 5;
-    if (retrievedLoans) {
-      retrievedLoans.forEach((loan) => {
-        checkPageEnd();
-        pdf.text(`Date Filed: ${loan.DateFiled}`, 10, posY);
-        posY += 5;
-        pdf.text(`Customer Number: ${loan.CustomerNumber}`, 10, posY);
-        posY += 5;
-        pdf.text(`Court Name: ${loan.Name}`, 10, posY);
-        posY += 5;
-        pdf.text(
-          `Name Address And Amount: ${loan.NameAddressAndAmount}`,
-          10,
-          posY
-        );
-        posY += 5;
-
-        pdf.text(`Maturity Date: ${loan.MaturityDate}`, 10, posY);
-        posY += 10;
-        checkPageEnd();
-      });
-    } else {
-      checkPageEnd();
-      pdf.text(`No Record of Loans`, 10, posY);
-      posY += 10;
-      checkPageEnd();
-    }
-
-    posY += 5;
-    pdf.setFont("helvetica", "bold");
-    pdf.text("Legal Items", 10, posY);
-    pdf.setFont("helvetica", "normal");
-    posY += 5;
-    if (retrievedLegalItems) {
-      retrievedLegalItems.forEach((legalItem) => {
-        checkPageEnd();
-        pdf.text(`Date Filed: ${legalItem.DateFiled}`, 10, posY);
-        posY += 5;
-        pdf.text(
-          `LegalItem Description: ${legalItem.CNLegalItem_description}`,
-          10,
-          posY
-        );
-        posY += 5;
-        pdf.text(
-          `Amount: ${
-            legalItem.Amount ? "$" + Number(legalItem.Amount) : "N/A"
-          }`,
-          10,
-          posY
-        );
-        posY += 5;
-        pdf.text(`Defendant: ${legalItem.Defendant}`, 10, posY);
-        posY += 5;
-        pdf.text(`Plaintiff: ${legalItem.Plaintiff}`, 10, posY);
-        posY += 5;
-        pdf.text(`Lawyer Info: ${legalItem.LawyerNameAddress}`, 10, posY);
-        posY += 10;
-        checkPageEnd();
-      });
-    } else {
-      pdf.text(`No Record of Legal Items`, 10, posY);
-      posY += 10;
-      checkPageEnd();
-    }
-
-    posY += 5;
-    pdf.setFont("helvetica", "bold");
-    pdf.text("Trades", 10, posY);
-    pdf.setFont("helvetica", "normal");
-    posY += 5;
-    if (retrievedTrades) {
-      retrievedTrades.forEach((trade) => {
-        checkPageEnd();
-        pdf.text(`Date Reported: ${trade.DateReported}`, 10, posY);
-        posY += 5;
-        pdf.text(
-          `High Credit Amount: ${
-            +trade.HighCreditAmount
-              ? "$" + Number(trade.HighCreditAmount)
-              : "N/A"
-          }`,
-          10,
-          posY
-        );
-        posY += 5;
-        pdf.text(
-          `Payment Term Amount: ${Number(trade.PaymentTermAmount) || "N/A"}`,
-          10,
-          posY
-        );
-        posY += 5;
-        pdf.text(
-          `Balance Amount: ${Number(trade.BalanceAmount) || "N/A"}`,
-          10,
-          posY
-        );
-        posY += 5;
-        pdf.text(
-          `Past Due Amount: ${Number(trade.PastDueAmount) || "N/A"}`,
-          10,
-          posY
-        );
-        posY += 5;
-        pdf.text(
-          `Months Reviewed: ${
-            trade.MonthsReviewed ? trade.MonthsReviewed : "N/A"
-          }`,
-          10,
-          posY
-        );
-        posY += 5;
-        pdf.text(`DateOpened: ${trade.DateOpened}`, 10, posY);
-        posY += 5;
-        pdf.text(
-          `Date of Last Activity/Payment: ${trade.DateLastActivityOrPayment}`,
-          10,
-          posY
-        );
-        posY += 5;
-        pdf.text(
-          `Portfolio Description: ${
-            trade.PortfolioType_description
-              ? trade.PortfolioType_description
-              : "N/A"
-          }`,
-          10,
-          posY
-        );
-        posY += 5;
-        pdf.text(
-          `Payment Description: ${
-            trade.PaymentRate_description
-              ? trade.PaymentRate_description
-              : "N/A"
-          }`,
-          10,
-          posY
-        );
-        posY += 10;
-        checkPageEnd();
-      });
-    } else {
-      pdf.text(`No Record of Trades`, 10, posY);
-      posY += 10;
-      checkPageEnd();
-    }
-
-    // Save PDF
-    pdf.save("Rented123 Full Credit Report.pdf");
-    pdfBlob = pdf.output("blob");
-  } else {
-    // Add smaller logo, centered at the top
-    pdf.setTextColor(0, 0, 0); // Reset color to black
-
-    // User information with extra line spacing
-    pdf.setFontSize(12);
-    pdf.setFont("Helvetica", "normal");
-    pdf.text(`Name: ${last_name}, ${first_name}`, 20, 80);
-    pdf.text(`Current Address: ${address}`, 20, 95);
-    pdf.text(`Date of Birth: ${dob}`, 20, 110);
-    pdf.setFont("Helvetica", "bold");
-    pdf.text(`Credit Score: ${userData.score}`, 20, 125);
-    pdf.setFont("Helvetica", "normal");
-
-    pdf.setProperties({
-      title: xmlResult ? "Full Credit Report" : "Basic Credit Report",
-      author: "Rented123",
-      keywords: `${last_name} ${score}`,
+    const currentDate = new Date().toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
 
-    // Download PDF
-    pdf.save(xmlResult ? "Full Credit Report" : "Basic Credit Report");
-    pdfBlob = pdf.output("blob");
-  }
+    pdf.text(`Date Pulled: ${currentDate}`, pageWidth - 20, 30, {
+      align: "right",
+    });
 
-  //save pdf
-  const goodCreditStanding = userData.score > 580; //580 is minimum score
-  await saves3LinkInWordPress(
-    pdfBlob as Blob,
-    goodCreditStanding,
-    `${last_name}_${dob}_credit_report`,
-    last_name,
-    dob
-  );
+    setTextColor(colors.equifax);
+    pdf.setFont("helvetica", "bold");
+    pdf.text("Powered by Equifax", pageWidth - 20, 40, { align: "right" });
 
-  emailPDF(userData, goodCreditStanding);
+    // Reset text color
+    setTextColor("#000000");
+  };
+
+  // Personal Information Section
+  const drawPersonalInfo = () => {
+    let currentY = 65;
+
+    // Section header
+    pdf.setFontSize(16);
+    pdf.setFont("helvetica", "bold");
+    setTextColor(colors.primary);
+    pdf.text("Personal Information", 20, currentY);
+
+    // Underline
+    setFillColor(colors.primary);
+    pdf.rect(20, currentY + 2, 52, 0.5, "F");
+
+    currentY += 15;
+
+    // Personal info card
+    drawCard(20, currentY, pageWidth - 40, 50, colors.gray[100]);
+
+    currentY += 15;
+
+    // Personal details
+    pdf.setFontSize(12);
+    pdf.setFont("helvetica", "normal");
+    setTextColor(colors.gray[800]);
+
+    const personalInfo = [
+      { label: "Full Name:", value: `${last_name}, ${first_name}` },
+      { label: "Date of Birth:", value: dob },
+      { label: "Current Address:", value: address },
+    ];
+
+    personalInfo.forEach((info, index) => {
+      pdf.setFont("helvetica", "bold");
+      pdf.text(info.label, 30, currentY);
+      pdf.setFont("helvetica", "normal");
+      pdf.text(info.value, 70, currentY);
+      currentY += 10;
+    });
+  };
+
+  // Credit Score Section with Visualization
+  const drawCreditScore = () => {
+    let currentY = 150;
+
+    // Section header
+    pdf.setFontSize(16);
+    pdf.setFont("helvetica", "bold");
+    setTextColor(colors.primary);
+    pdf.text("Credit Score Overview", 20, currentY);
+
+    // Underline
+    setFillColor(colors.primary);
+    pdf.rect(20, currentY + 2, 60, 0.5, "F");
+
+    currentY += 20;
+
+    // Credit score card
+    const scoreColor = getScoreColor(score);
+    drawCard(20, currentY, pageWidth - 40, 80);
+
+    // Large score display
+    pdf.setFontSize(48);
+    pdf.setFont("helvetica", "bold");
+    setTextColor(scoreColor);
+    pdf.text(score.toString(), 40, currentY + 40);
+
+    // Score rating
+    pdf.setFontSize(16);
+    pdf.setFont("helvetica", "bold");
+    setTextColor(scoreColor);
+    pdf.text(getScoreRating(score), 40, currentY + 55);
+
+    // Score range indicator
+    currentY += 20;
+    const scoreRanges = [
+      { min: 300, max: 579, label: "Poor", color: colors.error },
+      { min: 580, max: 669, label: "Fair", color: colors.accent },
+      { min: 670, max: 739, label: "Good", color: colors.warning },
+      { min: 740, max: 799, label: "Very Good", color: colors.secondary },
+      { min: 800, max: 850, label: "Excellent", color: colors.success },
+    ];
+
+    // Draw score scale
+    const scaleStartX = 120;
+    const scaleWidth = 60;
+    const scaleHeight = 8;
+
+    scoreRanges.forEach((range, index) => {
+      const segmentWidth = scaleWidth / scoreRanges.length;
+      const x = scaleStartX + index * segmentWidth;
+
+      setFillColor(range.color);
+      pdf.rect(x, currentY + 20, segmentWidth - 1, scaleHeight, "F");
+
+      // Highlight current score range
+      if (score >= range.min && score <= range.max) {
+        pdf.setDrawColor(50, 50, 50);
+        pdf.setLineWidth(2);
+        pdf.rect(x, currentY + 20, segmentWidth - 1, scaleHeight, "S");
+      }
+    });
+
+    // Scale labels
+    pdf.setFontSize(8);
+    pdf.setFont("helvetica", "normal");
+    setTextColor(colors.gray[600]);
+    pdf.text("300", scaleStartX, currentY + 35);
+    pdf.text("850", scaleStartX + scaleWidth - 10, currentY + 35);
+
+    // Score interpretation
+    currentY += 50;
+    pdf.setFontSize(10);
+    pdf.setFont("helvetica", "normal");
+    setTextColor(colors.gray[800]);
+
+    const interpretation = getScoreInterpretation(score);
+    const splitText = pdf.splitTextToSize(interpretation, pageWidth - 60);
+    pdf.text(splitText, 30, currentY);
+  };
+
+  const getScoreInterpretation = (score: number) => {
+    if (score >= 800) {
+      return "Exceptional credit score! You qualify for the best interest rates and credit terms available. Lenders view you as a very low-risk borrower.";
+    } else if (score >= 740) {
+      return "Very good credit score. You'll likely qualify for competitive interest rates and favorable credit terms from most lenders.";
+    } else if (score >= 670) {
+      return "Good credit score. You should qualify for most credit products, though you may not get the very best rates available.";
+    } else if (score >= 580) {
+      return "Fair credit score. You may face higher interest rates and more restrictive terms. Consider working to improve your credit.";
+    } else {
+      return "Poor credit score. You may have difficulty qualifying for credit, and when you do, expect high interest rates and strict terms.";
+    }
+  };
+
+  // Key Factors Section (for basic report)
+  const drawKeyFactors = () => {
+    let currentY = 270;
+
+    if (currentY > pageHeight - 50) {
+      pdf.addPage();
+      currentY = 20;
+    }
+
+    // Section header
+    pdf.setFontSize(16);
+    pdf.setFont("helvetica", "bold");
+    setTextColor(colors.primary);
+    pdf.text("Understanding Your Credit", 20, currentY);
+
+    // Underline
+    setFillColor(colors.primary);
+    pdf.rect(20, currentY + 2, 65, 0.5, "F");
+
+    currentY += 20;
+
+    // Key factors card
+    drawCard(20, currentY, pageWidth - 40, 60, colors.gray[100]);
+
+    currentY += 15;
+
+    pdf.setFontSize(11);
+    pdf.setFont("helvetica", "normal");
+    setTextColor(colors.gray[800]);
+
+    const keyFactors = [
+      "• Payment history accounts for 35% of your credit score",
+      "• Credit utilization should be kept below 30%",
+      "• Length of credit history affects 15% of your score",
+      "• Credit mix and new accounts impact the remaining 20%",
+    ];
+
+    keyFactors.forEach((factor) => {
+      pdf.text(factor, 30, currentY);
+      currentY += 10;
+    });
+  };
+
+  // Footer
+  const drawFooter = () => {
+    const footerY = pageHeight - 30;
+
+    // Footer line
+    pdf.setDrawColor(200, 200, 200);
+    pdf.setLineWidth(0.5);
+    pdf.line(20, footerY, pageWidth - 20, footerY);
+
+    // Footer text
+    pdf.setFontSize(8);
+    pdf.setFont("helvetica", "normal");
+    setTextColor(colors.gray[600]);
+
+    pdf.text(
+      "This report is confidential and intended solely for the named individual.",
+      20,
+      footerY + 10
+    );
+    pdf.text(`Report ID: CR-${Date.now()}`, 20, footerY + 18);
+
+    //pdf.text("Page 1 of 1", pageWidth - 20, footerY + 10, { align: "right" });
+    pdf.text("Generated by Rented123", pageWidth - 20, footerY + 10, {
+      align: "right",
+    });
+  };
+
+  // Generate the PDF
+  drawHeader();
+  drawPersonalInfo();
+  drawCreditScore();
+  drawKeyFactors();
+  drawFooter();
+
+  // Set PDF properties
+  pdf.setProperties({
+    title: xmlResult ? "Full Credit Report" : "Basic Credit Report",
+    author: "Rented123",
+    keywords: `${last_name} ${score}`,
+  });
+
+  return pdf;
 };
 
 export const saves3LinkInWordPress = async (
@@ -555,6 +467,37 @@ export default function DownloadReportButton({
   activeToken: string;
 }) {
   const { XMLResult } = useResultCtx();
+  const handleGenerateReport = async () => {
+    try {
+      const pdf = await generateCreditReportPDF(
+        userData,
+        activeToken,
+        XMLResult as Document
+      );
+
+      // Download the PDF
+      const filename = `Credit_Report_${userData.last_name}_${
+        userData.first_name
+      }_${new Date().toISOString().split("T")[0]}.pdf`;
+      pdf.save(filename);
+
+      //save pdf
+      const pdfBlob = pdf.output("blob");
+      const goodCreditStanding = userData.score > 580; //580 is minimum score
+      await saves3LinkInWordPress(
+        pdfBlob as Blob,
+        goodCreditStanding,
+        `${userData.last_name}_${userData.dob}_credit_report`,
+        `${userData.last_name}`,
+        `${userData.dob}`
+      );
+
+      //emailPDF(userData, goodCreditStanding);
+    } catch (error) {
+      console.error("Error generating credit report:", error);
+      alert("Error generating credit report. Please try again.");
+    }
+  };
   return (
     <div>
       <div id="gauge-chart"></div>
@@ -563,9 +506,7 @@ export default function DownloadReportButton({
         type="submit"
         variant="contained"
         color="primary"
-        onClick={() => {
-          generateCreditReportPDF(userData, activeToken, XMLResult as Document);
-        }}
+        onClick={handleGenerateReport}
       >
         Download Credit Report
       </Button>
