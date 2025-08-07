@@ -10,11 +10,14 @@ export async function GET(req: Request) {
 
   try {
     const response = await fetch(
-      `${process.env.WORDPRESS_TOKEN_BASE_API}/get-token/?token=${token}`, // Send token as a query parameter
+      `${process.env.WORDPRESS_BASE_API}/scan_id/v1/get-token/?token=${token}`, // Send token as a query parameter
       {
         method: "GET",
         headers: {
           Accept: "application/json", // Optional: Specify that you expect a JSON response
+          "CF-Access-Client-Id": process.env.CF_ACCESS_CLIENT_ID as string,
+          "CF-Access-Client-Secret": process.env
+            .CF_ACCESS_CLIENT_SECRET as string,
         },
       }
     );

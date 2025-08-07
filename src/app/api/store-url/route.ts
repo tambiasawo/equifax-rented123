@@ -5,7 +5,7 @@ export async function POST(req: Request) {
     await req.json();
   try {
     const response = await fetch(
-      `${process.env.WORDPRESS_BASE_API}/save-credit-check-report/`,
+      `${process.env.WORDPRESS_BASE_API}/report_storage/v1/save-credit-check-report/`,
       {
         method: "POST",
         body: JSON.stringify({
