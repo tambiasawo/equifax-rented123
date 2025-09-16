@@ -7,9 +7,9 @@ const AWS_SECRET_ACCESS_KEY = process.env.ACCESS_KEY_SECRET!;
 const AWS_REGION = process.env.REGION!;
 
 export async function POST(req: Request) {
-  const { PDFfile, fileName,email,credit_score } = await req.json();
+  const { PDFfile, fileName, email, credit_score } = await req.json();
   const pdfBuffer = Buffer.from(PDFfile, "base64");
-console.log({email,credit_score});
+
   // Initialize S3 client
   const s3 = new S3Client({
     region: AWS_REGION,
@@ -24,9 +24,11 @@ console.log({email,credit_score});
     Key: fileName,
     Body: pdfBuffer,
     ContentType: "application/pdf",
-    metadata: {
-      email,
-      credit_score,
+    // CORRECTED: Key is 'Metadata' (capital M)
+    Metadata: {
+      email: email, // Assuming 'email' is already a string
+      // CORRECTED: Value MUST be a string
+      "credit-score": String(credit_score),
     },
   };
 
@@ -34,7 +36,9 @@ console.log({email,credit_score});
     // Upload file to S3
     const data = await s3.send(new PutObjectCommand(params));
     console.log("File uploaded successfully:", data);
-    return NextResponse.json({ location: `https://${params.Bucket}.s3.${AWS_REGION}.amazonaws.com/${fileName}` });
+    return NextResponse.json({
+      location: `https://${params.Bucket}.s3.${AWS_REGION}.amazonaws.com/${fileName}`,
+    });
   } catch (err) {
     console.error("Upload error:", err);
     return NextResponse.json(

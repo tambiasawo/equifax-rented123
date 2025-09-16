@@ -134,7 +134,7 @@ export default function DownloadReportButton({
     <div>
       <div id="gauge-chart"></div>
       <button
-        className="bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200 shadow-md hover:shadow-lg mt-2"
+        className="bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200 shadow-md hover:shadow-lg mt-4"
         type="submit"
         onClick={handleGenerateReport}
       >
