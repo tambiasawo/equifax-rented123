@@ -7,9 +7,9 @@ const AWS_SECRET_ACCESS_KEY = process.env.ACCESS_KEY_SECRET!;
 const AWS_REGION = process.env.REGION!;
 
 export async function POST(req: Request) {
-  const { PDFfile, fileName } = await req.json();
+  const { PDFfile, fileName,email,credit_score } = await req.json();
   const pdfBuffer = Buffer.from(PDFfile, "base64");
-
+console.log({email,credit_score});
   // Initialize S3 client
   const s3 = new S3Client({
     region: AWS_REGION,
@@ -24,6 +24,10 @@ export async function POST(req: Request) {
     Key: fileName,
     Body: pdfBuffer,
     ContentType: "application/pdf",
+    metadata: {
+      email,
+      credit_score,
+    },
   };
 
   try {

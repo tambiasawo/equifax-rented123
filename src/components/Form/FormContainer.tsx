@@ -268,7 +268,7 @@ const MyForm = ({ showFullReport }: { showFullReport?: boolean }) => {
           setFieldValue,
         }) => (
           <Form className="form-container">
-            <h2 className="subtitle">Fill out the form fields below</h2>
+            <h2 className="subtitle pt-2">Fill out the form fields below</h2>
             <Field
               name="first_name"
               as={TextField}
@@ -498,16 +498,13 @@ const MyForm = ({ showFullReport }: { showFullReport?: boolean }) => {
                 />
               )}
             </Field>
-            <Button
-              className="submit-button"
-              sx={{ marginTop: "10px" }}
+            <button
+              className="bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200 shadow-md hover:shadow-lg disabled:bg-gray-400 disabled:cursor-not-allowed mt-4 w-full md:w-auto"
               type="submit"
-              variant="contained"
-              color="primary"
               disabled={isSubmitting}
             >
               Check My Score
-            </Button>
+            </button>
           </Form>
         )}
       </Formik>

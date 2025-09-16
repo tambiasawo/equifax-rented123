@@ -25,7 +25,6 @@ export const ResultCtxProvider = ({
   const [XMLResult, setXMLResult] = useState<Document | null>(null); // Replace `unknown` with a specific type if applicable
 
   const changeXMLResult = useCallback((result: unknown) => {
-    console.log("ctx", result);
     setXMLResult(result as Document);
   }, []);
 
