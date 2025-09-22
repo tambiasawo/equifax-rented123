@@ -141,6 +141,15 @@ export const getToken = async (token: string) => {
     return null; // Return null if an error occurred
   }
 };
+function emailToS3Prefix(email: string | undefined) {
+  if (!email) return "";
+  return email
+    .replace(/@/g, "_at_")
+    .replace(/\+/g, "_plus_")
+    .replace(/\./g, "_dot_")
+    .replace(/-/g, "_dash_")
+    .replace(/[^a-zA-Z0-9_]/g, "_"); // Same logic as your app
+}
 
 export const handleGenerateReportforEmail = async (
   userData: UserData,
@@ -152,12 +161,11 @@ export const handleGenerateReportforEmail = async (
 
     //save pdf
     const pdfBlob = pdf.output("blob");
+    const folderName = emailToS3Prefix(email);
 
     const s3Url = await saveToS3(
       pdfBlob,
-      `${email.replace("@", "at")}/${userData.last_name}_${
-        userData.dob
-      }_credit_report.pdf`,
+      `${folderName}/${userData.last_name}_${userData.dob}_credit_report.pdf`,
       email,
       userData.score
     );
