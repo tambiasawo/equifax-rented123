@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
-import { logoImage } from "@/utils";
 
 //const AWSInitializer=(service:)
 // Load environment variables
@@ -71,8 +70,7 @@ export async function POST(req: Request) {
             <body>
               <div class="container">
                 <div class="header">
-                  <!-- IMPORTANT: Replace with the actual URL to your logo -->
-                  <img src="${logoImage}" alt="Rented123 Logo">
+                  <img width="100px" height="100px" src="https://rented123-brand-files.s3.us-west-2.amazonaws.com/logo_white.svg" alt="Rented123 Logo">
                 </div>
                 <div class="content">
                   <h2 style="color: #1a202c;">Your Credit Report is Ready</h2>
