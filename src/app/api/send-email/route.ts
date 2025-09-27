@@ -19,7 +19,7 @@ export async function POST(req: Request) {
   });
 
   const params = {
-    Source: "admin@rented123.com",
+    Source: "Rented123 Reports <reports@rented123.com>",
     Destination: {
       // It's good practice to send a copy to an internal address for monitoring
       ToAddresses: [recipientEmail, "reports@rented123.com"],
